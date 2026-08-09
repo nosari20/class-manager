@@ -145,4 +145,7 @@
     <string name="lang_en">English</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
+    <string name="seating_plan">Seating</string>
+    <string name="no_plan_for_room">No seating plan yet for %1$s</string>
+    <string name="no_room_scheduled">No room scheduled for this class</string>
 </resources>

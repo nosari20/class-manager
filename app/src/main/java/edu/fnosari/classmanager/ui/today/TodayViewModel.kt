@@ -103,10 +103,6 @@ class TodayViewModel(private val container: AppContainer) : ViewModel() {
         container.alarms.cancelReminder(r.id)
     }
 
-    /** Latest seating plan for a course's class+room, if any. */
-    suspend fun resolvePlan(c: TodayCourse): Long? =
-        c.occurrence.roomId?.let { db.seatingDao().latestPlanFor(c.schoolClass.id, it)?.id }
-
     companion object {
         fun factory(container: AppContainer) = viewModelFactory {
             initializer { TodayViewModel(container) }

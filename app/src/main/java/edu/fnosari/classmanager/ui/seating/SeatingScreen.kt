@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -262,14 +263,11 @@ private fun NameDialog(initial: String, onDismiss: () -> Unit, onSave: (String) 
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SeatingScreen(planId: Long, onBack: () -> Unit) {
-    val vm: SeatingViewModel =
-        viewModel(factory = SeatingViewModel.factory(LocalContext.current.appContainer, planId))
+    val vm: SeatingViewModel = seatingViewModel(planId)
     val state by vm.state.collectAsStateWithLifecycle()
-    var pickingFor by remember { mutableStateOf<Pair<Long, Int>?>(null) }   // (deskId, seatIndex) needing a student
-    var occupiedTap by remember { mutableStateOf<Pair<Long, Int>?>(null) }  // occupied (deskId, seatIndex) tapped
 
     Scaffold(
         topBar = {
@@ -284,8 +282,28 @@ fun SeatingScreen(planId: Long, onBack: () -> Unit) {
             )
         },
     ) { padding ->
+        SeatingPlanBody(planId, Modifier.padding(padding))
+    }
+}
+
+@Composable
+private fun seatingViewModel(planId: Long): SeatingViewModel = viewModel(
+    key = "seating-$planId",
+    factory = SeatingViewModel.factory(LocalContext.current.appContainer, planId),
+)
+
+/** The plan itself — canvas plus unassigned students. Shared by the standalone screen and the class tab. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun SeatingPlanBody(planId: Long, modifier: Modifier = Modifier) {
+    val vm: SeatingViewModel = seatingViewModel(planId)
+    val state by vm.state.collectAsStateWithLifecycle()
+    var pickingFor by remember { mutableStateOf<Pair<Long, Int>?>(null) }   // (deskId, seatIndex) needing a student
+    var occupiedTap by remember { mutableStateOf<Pair<Long, Int>?>(null) }  // occupied (deskId, seatIndex) tapped
+
+    Box(modifier) {
         Column(
-            Modifier.padding(padding).fillMaxSize()
+            Modifier.fillMaxSize()
                 .verticalScroll(rememberScrollState()).padding(16.dp),
         ) {
             Text(
@@ -307,7 +325,7 @@ fun SeatingScreen(planId: Long, onBack: () -> Unit) {
                 deskContent = { d ->
                     SeatSlots(d, Modifier.fillMaxSize()) { seatIndex ->
                         val student = state.seats[d.id]?.get(seatIndex)
-                        androidx.compose.foundation.layout.Box(
+                        Box(
                             Modifier
                                 .fillMaxSize()
                                 .background(

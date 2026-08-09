@@ -25,8 +25,7 @@ fun HomeScreen(
     onOpenClass: (Long) -> Unit,
     onImportCsv: () -> Unit,
     onSettings: () -> Unit,
-    onOpenSeating: (Long) -> Unit,
-    onOpenSeatingPlans: (Long) -> Unit,
+    onOpenCourse: (classId: Long, roomId: Long?) -> Unit,
     onOpenStudent: (Long) -> Unit,
     onOpenTimetable: () -> Unit,
 ) {
@@ -52,8 +51,7 @@ fun HomeScreen(
         androidx.compose.foundation.layout.Box(Modifier.padding(padding)) {
             if (tab == 0) {
                 TodayScreen(
-                    onOpenSeating = onOpenSeating,
-                    onOpenSeatingPlans = onOpenSeatingPlans,
+                    onOpenCourse = onOpenCourse,
                     onOpenStudent = onOpenStudent,
                     onOpenTimetable = onOpenTimetable,
                 )

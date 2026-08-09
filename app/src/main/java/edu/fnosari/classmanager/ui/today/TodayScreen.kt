@@ -51,15 +51,13 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayScreen(
-    onOpenSeating: (Long) -> Unit,
-    onOpenSeatingPlans: (Long) -> Unit,
+    onOpenCourse: (classId: Long, roomId: Long?) -> Unit,
     onOpenStudent: (Long) -> Unit,
     onOpenTimetable: () -> Unit,
 ) {
     val vm: TodayViewModel =
         viewModel(factory = TodayViewModel.factory(LocalContext.current.appContainer))
     val state by vm.state.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -117,13 +115,7 @@ fun TodayScreen(
                     Card(
                         Modifier
                             .weight(1f)
-                            .clickable {
-                                scope.launch {
-                                    val planId = vm.resolvePlan(c)
-                                    if (planId != null) onOpenSeating(planId)
-                                    else onOpenSeatingPlans(c.schoolClass.id)
-                                }
-                            },
+                            .clickable { onOpenCourse(c.schoolClass.id, c.occurrence.roomId) },
                         colors = CardDefaults.cardColors(
                             containerColor = when {
                                 c.isCurrent -> MaterialTheme.colorScheme.primaryContainer
