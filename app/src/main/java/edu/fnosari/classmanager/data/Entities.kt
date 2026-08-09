@@ -19,9 +19,12 @@ data class SchoolClass(
 
 @Entity(
     tableName = "timetable_slot",
-    foreignKeys = [ForeignKey(entity = SchoolClass::class, parentColumns = ["id"],
-        childColumns = ["classId"], onDelete = ForeignKey.CASCADE)],
-    indices = [Index("classId")],
+    foreignKeys = [
+        ForeignKey(entity = SchoolClass::class, parentColumns = ["id"],
+            childColumns = ["classId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = Room::class, parentColumns = ["id"],
+            childColumns = ["roomId"], onDelete = ForeignKey.SET_NULL)],
+    indices = [Index("classId"), Index("roomId")],
 )
 data class TimetableSlot(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -30,6 +33,7 @@ data class TimetableSlot(
     val startTime: String,       // "HH:mm"
     val endTime: String,         // "HH:mm"
     val weekParity: WeekParityTag = WeekParityTag.BOTH,
+    val roomId: Long? = null,
 )
 
 @Entity(

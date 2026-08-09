@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -34,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,13 +47,23 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.fnosari.classmanager.R
 import edu.fnosari.classmanager.appContainer
 import edu.fnosari.classmanager.data.SchoolClass
+import edu.fnosari.classmanager.ui.timetable.dayName
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun ClassListScreen(onOpenClass: (Long) -> Unit, onImportCsv: () -> Unit, onSettings: () -> Unit) {
+fun ClassListScreen(
+    onOpenClass: (Long) -> Unit,
+    onImportCsv: () -> Unit,
+    onSettings: () -> Unit,
+    onOpenSeating: (Long) -> Unit,
+    onOpenSeatingPlans: (Long) -> Unit,
+) {
     val vm: ClassListViewModel =
         viewModel(factory = ClassListViewModel.factory(LocalContext.current.appContainer))
     val classes by vm.classes.collectAsStateWithLifecycle()
+    val banner by vm.banner.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
     var editing by remember { mutableStateOf<SchoolClass?>(null) }
     var showCreate by remember { mutableStateOf(false) }
     var deleting by remember { mutableStateOf<SchoolClass?>(null) }
@@ -90,6 +102,48 @@ fun ClassListScreen(onOpenClass: (Long) -> Unit, onImportCsv: () -> Unit, onSett
             Modifier.padding(padding).fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
         ) {
+            banner?.let { b ->
+                item(key = "banner") {
+                    Card(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp)
+                            .combinedClickable(onClick = {
+                                scope.launch {
+                                    val planId = vm.resolvePlan(b)
+                                    if (planId != null) onOpenSeating(planId)
+                                    else onOpenSeatingPlans(b.schoolClass.id)
+                                }
+                            }),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (b.isCurrent) MaterialTheme.colorScheme.primaryContainer
+                            else MaterialTheme.colorScheme.secondaryContainer,
+                        ),
+                    ) {
+                        Column(Modifier.padding(16.dp)) {
+                            Text(
+                                stringResource(
+                                    if (b.isCurrent) R.string.current_course else R.string.next_course
+                                ),
+                                style = MaterialTheme.typography.labelMedium,
+                            )
+                            val roomPart = b.roomName?.let { " — $it" } ?: ""
+                            val whenPart = if (b.isCurrent) {
+                                "${b.slot.startTime}–${b.slot.endTime}"
+                            } else {
+                                b.startAt?.let {
+                                    "${dayName(b.slot.dayOfWeek)} ${b.slot.startTime}"
+                                } ?: ""
+                            }
+                            Text(
+                                "${b.schoolClass.name}$roomPart",
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            Text(whenPart, style = MaterialTheme.typography.bodyMedium)
+                        }
+                    }
+                }
+            }
             items(classes, key = { it.schoolClass.id }) { row ->
                 Card(
                     Modifier

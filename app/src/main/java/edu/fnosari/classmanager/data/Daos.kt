@@ -47,6 +47,8 @@ import kotlinx.coroutines.flow.Flow
     fun slotsFor(classId: Long): Flow<List<TimetableSlot>>
     @Query("SELECT * FROM timetable_slot WHERE classId = :classId")
     suspend fun slotsForOnce(classId: Long): List<TimetableSlot>
+    @Query("SELECT * FROM timetable_slot")
+    fun allSlots(): Flow<List<TimetableSlot>>
 }
 
 @Dao interface NoteDao {
@@ -96,6 +98,8 @@ import kotlinx.coroutines.flow.Flow
     @Query("SELECT * FROM seating_plan WHERE classId = :classId ORDER BY createdAt DESC")
     fun plansFor(classId: Long): Flow<List<SeatingPlan>>
     @Query("SELECT * FROM seating_plan WHERE id = :id") suspend fun planById(id: Long): SeatingPlan?
+    @Query("SELECT * FROM seating_plan WHERE classId = :classId AND roomId = :roomId ORDER BY createdAt DESC LIMIT 1")
+    suspend fun latestPlanFor(classId: Long, roomId: Long): SeatingPlan?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun assign(a: SeatAssignment)
     @Query("DELETE FROM seat_assignment WHERE planId = :planId AND deskId = :deskId AND seatIndex = :seatIndex")

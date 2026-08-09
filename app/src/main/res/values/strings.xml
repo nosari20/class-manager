@@ -108,4 +108,7 @@
     <string name="make_two_seats">Make 2-seat table</string>
     <string name="make_one_seat">Make 1-seat table</string>
     <string name="rotate_desk">Rotate</string>
+    <string name="no_room">No room</string>
+    <string name="current_course">Current course</string>
+    <string name="next_course">Next course</string>
 </resources>
