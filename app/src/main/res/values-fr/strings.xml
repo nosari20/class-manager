@@ -76,4 +76,16 @@
     <string name="reminder_digest">Rappel du matin à une date</string>
     <string name="pick_date">Choisir une date</string>
     <string name="no_timetable_message">Cette classe n\'a pas d\'emploi du temps. Ajoutez des créneaux, ou choisissez une date.</string>
+    <string name="not_set">Non défini</string>
+    <string name="backup">Sauvegarder</string>
+    <string name="restore">Restaurer</string>
+    <string name="digest_time">Heure du rappel matinal</string>
+    <string name="week_a_reference">Semaine A de référence</string>
+    <string name="week_a_help">Choisissez un jour d\'une semaine A</string>
+    <string name="restore_warning">Ceci remplace TOUTES les données actuelles. Continuer ?</string>
+    <string name="restore_done">Restauration terminée</string>
+    <string name="restore_invalid">Ce fichier n\'est pas une sauvegarde valide</string>
+    <string name="restore_newer">Sauvegarde créée avec une version plus récente de l\'application</string>
+    <string name="backup_done">Sauvegarde enregistrée</string>
+    <string name="backup_failed">Échec de la sauvegarde</string>
 </resources>

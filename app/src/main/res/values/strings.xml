@@ -76,4 +76,16 @@
     <string name="reminder_digest">Morning digest on a date</string>
     <string name="pick_date">Pick date</string>
     <string name="no_timetable_message">This class has no timetable. Add slots first, or pick a date.</string>
+    <string name="not_set">Not set</string>
+    <string name="backup">Backup</string>
+    <string name="restore">Restore</string>
+    <string name="digest_time">Morning digest time</string>
+    <string name="week_a_reference">Week A reference</string>
+    <string name="week_a_help">Pick any day of a week that is week A</string>
+    <string name="restore_warning">This replaces ALL current data. Continue?</string>
+    <string name="restore_done">Restore complete</string>
+    <string name="restore_invalid">This file is not a valid backup</string>
+    <string name="restore_newer">Backup was made with a newer app version</string>
+    <string name="backup_done">Backup saved</string>
+    <string name="backup_failed">Backup failed</string>
 </resources>

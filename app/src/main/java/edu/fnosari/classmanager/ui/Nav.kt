@@ -17,6 +17,7 @@ import edu.fnosari.classmanager.ui.classlist.ClassListScreen
 import edu.fnosari.classmanager.ui.csv.CsvImportScreen
 import edu.fnosari.classmanager.ui.groups.GroupsScreen
 import edu.fnosari.classmanager.ui.picker.PickerScreen
+import edu.fnosari.classmanager.ui.settings.SettingsScreen
 import edu.fnosari.classmanager.ui.student.StudentDetailScreen
 
 object Routes {
@@ -82,7 +83,14 @@ fun AppNavHost(nav: NavHostController, startStudentId: Long?) {
                 onBack = { nav.popBackStack() },
             )
         }
-        composable(Routes.SETTINGS) { PlaceholderScreen("Settings") }
+        composable(Routes.SETTINGS) {
+            SettingsScreen(
+                onBack = { nav.popBackStack() },
+                onRestored = {
+                    nav.navigate(Routes.CLASS_LIST) { popUpTo(0) { inclusive = true } }
+                },
+            )
+        }
     }
     LaunchedEffect(startStudentId) {
         if (startStudentId != null && startStudentId > 0) nav.navigate(Routes.student(startStudentId))
