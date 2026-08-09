@@ -43,4 +43,20 @@
     <string name="cycle_restarted">Everyone was picked — new round!</string>
     <string name="absent_today">Absent today</string>
     <string name="reset_cycle">Reset round</string>
+    <string name="constraints">Separation constraints</string>
+    <string name="add_constraint">Add constraint</string>
+    <string name="first_student">First student</string>
+    <string name="second_student">Second student</string>
+    <string name="groups_of_n">Groups of N</string>
+    <string name="n_groups">N groups</string>
+    <string name="exclude_absent">Exclude absent</string>
+    <string name="generate">Generate</string>
+    <string name="reshuffle">Reshuffle</string>
+    <string name="group_n">Group %1$d</string>
+    <string name="infeasible_message">These constraints cannot all be satisfied:</string>
+    <string name="saved_groupings">Saved groupings</string>
+    <string name="grouping_name">Name</string>
+    <string name="view">View</string>
+    <string name="rename">Rename</string>
+    <string name="confirm_delete_grouping">Delete this grouping?</string>
 </resources>

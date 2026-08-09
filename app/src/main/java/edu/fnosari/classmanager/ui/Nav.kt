@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import edu.fnosari.classmanager.ui.classdetail.ClassDetailScreen
 import edu.fnosari.classmanager.ui.classlist.ClassListScreen
+import edu.fnosari.classmanager.ui.groups.GroupsScreen
 import edu.fnosari.classmanager.ui.picker.PickerScreen
 import edu.fnosari.classmanager.ui.student.StudentDetailScreen
 
@@ -70,7 +71,7 @@ fun AppNavHost(nav: NavHostController, startStudentId: Long?) {
             Routes.GROUPS,
             arguments = listOf(navArgument("classId") { type = NavType.LongType }),
         ) {
-            PlaceholderScreen("Groups")
+            GroupsScreen(it.arguments!!.getLong("classId"), onBack = { nav.popBackStack() })
         }
         composable(Routes.CSV_IMPORT) { PlaceholderScreen("CSV import") }
         composable(Routes.SETTINGS) { PlaceholderScreen("Settings") }

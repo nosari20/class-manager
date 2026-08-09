@@ -43,4 +43,20 @@
     <string name="cycle_restarted">Tout le monde est passé — nouveau tour !</string>
     <string name="absent_today">Absents aujourd\'hui</string>
     <string name="reset_cycle">Réinitialiser le tour</string>
+    <string name="constraints">Contraintes de séparation</string>
+    <string name="add_constraint">Ajouter une contrainte</string>
+    <string name="first_student">Premier élève</string>
+    <string name="second_student">Deuxième élève</string>
+    <string name="groups_of_n">Groupes de N</string>
+    <string name="n_groups">N groupes</string>
+    <string name="exclude_absent">Exclure les absents</string>
+    <string name="generate">Générer</string>
+    <string name="reshuffle">Relancer</string>
+    <string name="group_n">Groupe %1$d</string>
+    <string name="infeasible_message">Ces contraintes ne peuvent pas toutes être respectées :</string>
+    <string name="saved_groupings">Répartitions enregistrées</string>
+    <string name="grouping_name">Nom</string>
+    <string name="view">Voir</string>
+    <string name="rename">Renommer</string>
+    <string name="confirm_delete_grouping">Supprimer cette répartition ?</string>
 </resources>
