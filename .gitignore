@@ -13,3 +13,16 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Signing material — never commit
+*.jks
+*.keystore
+keystore.properties
+
+# IDE, machine-specific
+/.idea/deploymentTargetSelector.xml
+/.idea/deploymentTargetDropDown.xml
+/.idea/runConfigurations.xml
+/.idea/AndroidProjectSystem.xml
+/.idea/inspectionProfiles/
+/.idea/.name
