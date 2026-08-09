@@ -12,6 +12,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import edu.fnosari.classmanager.ui.classlist.ClassListScreen
 
 object Routes {
     const val CLASS_LIST = "classes"
@@ -30,7 +31,13 @@ object Routes {
 @Composable
 fun AppNavHost(nav: NavHostController, startStudentId: Long?) {
     NavHost(navController = nav, startDestination = Routes.CLASS_LIST) {
-        composable(Routes.CLASS_LIST) { PlaceholderScreen("Classes") }
+        composable(Routes.CLASS_LIST) {
+            ClassListScreen(
+                onOpenClass = { nav.navigate(Routes.classDetail(it)) },
+                onImportCsv = { nav.navigate(Routes.CSV_IMPORT) },
+                onSettings = { nav.navigate(Routes.SETTINGS) },
+            )
+        }
         composable(
             Routes.CLASS_DETAIL,
             arguments = listOf(navArgument("classId") { type = NavType.LongType }),
