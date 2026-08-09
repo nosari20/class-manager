@@ -17,7 +17,7 @@ class SeatingLogicTest {
     @Test fun violationsOnlyForSeparatedStudentsOnAdjacentDesks() {
         val desks = listOf(desk(1, 0.10f, 0.10f), desk(2, 0.20f, 0.10f), desk(3, 0.80f, 0.80f))
         // students: 100 on desk1, 200 on desk2 (adjacent), 300 far away
-        val seats = mapOf(1L to 100L, 2L to 200L, 3L to 300L)
+        val seats = mapOf(1L to listOf(100L), 2L to listOf(200L), 3L to listOf(300L))
         val separations = setOf(100L to 200L, 100L to 300L)
         val v = violatingDesks(desks, seats, separations, threshold = 0.15f)
         assertEquals(setOf(1L, 2L), v)
@@ -25,7 +25,7 @@ class SeatingLogicTest {
 
     @Test fun reversedSeparationAlsoCounts() {
         val desks = listOf(desk(1, 0.10f, 0.10f), desk(2, 0.20f, 0.10f))
-        val seats = mapOf(1L to 100L, 2L to 200L)
+        val seats = mapOf(1L to listOf(100L), 2L to listOf(200L))
         val v = violatingDesks(desks, seats, setOf(200L to 100L), threshold = 0.15f)
         assertEquals(setOf(1L, 2L), v)
     }
@@ -33,5 +33,18 @@ class SeatingLogicTest {
     @Test fun emptySeatsNoViolations() {
         val desks = listOf(desk(1, 0.10f, 0.10f), desk(2, 0.20f, 0.10f))
         assertTrue(violatingDesks(desks, emptyMap(), setOf(100L to 200L), 0.15f).isEmpty())
+    }
+
+    @Test fun separatedStudentsSharingTwoSeatTableViolate() {
+        val desks = listOf(desk(1, 0.50f, 0.50f))   // one 2-seat table, far from others
+        val seats = mapOf(1L to listOf(100L, 200L))
+        val v = violatingDesks(desks, seats, setOf(100L to 200L), threshold = 0.15f)
+        assertEquals(setOf(1L), v)
+    }
+
+    @Test fun sameTableNoConstraintNoViolation() {
+        val desks = listOf(desk(1, 0.50f, 0.50f))
+        val seats = mapOf(1L to listOf(100L, 200L))
+        assertTrue(violatingDesks(desks, seats, setOf(100L to 300L), 0.15f).isEmpty())
     }
 }

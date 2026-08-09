@@ -34,8 +34,13 @@ class RoomEditorViewModel(container: AppContainer, val roomId: Long) : ViewModel
     val room = kotlinx.coroutines.flow.flow { emit(dao.roomById(roomId)) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    fun addDesk(x: Float, y: Float) = viewModelScope.launch {
-        dao.insertDesk(Desk(roomId = roomId, x = x.coerceIn(0f, 1f), y = y.coerceIn(0f, 1f)))
+    fun addDesk(x: Float, y: Float, seats: Int) = viewModelScope.launch {
+        dao.insertDesk(Desk(roomId = roomId, x = x.coerceIn(0f, 1f), y = y.coerceIn(0f, 1f), seats = seats))
+    }
+
+    fun setSeats(d: Desk, seats: Int) = viewModelScope.launch {
+        if (seats < d.seats) dao.unassignSeatsFrom(d.id, seats)
+        dao.updateDesk(d.copy(seats = seats))
     }
 
     fun moveDesk(d: Desk, x: Float, y: Float) = viewModelScope.launch {

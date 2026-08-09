@@ -102,4 +102,9 @@
     <string name="unassigned_students">Non placés (%1$d)</string>
     <string name="pick_student">Choisir un élève</string>
     <string name="remove_from_seat">Retirer de la place</string>
+    <string name="one_seat">1 place</string>
+    <string name="two_seats">2 places</string>
+    <string name="desk_options">Table</string>
+    <string name="make_two_seats">Passer en table de 2</string>
+    <string name="make_one_seat">Passer en table de 1</string>
 </resources>

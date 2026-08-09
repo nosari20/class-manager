@@ -36,9 +36,9 @@ Offline-only. No server, no account. French + English UI (French default via sys
 | SeparationConstraint | id, classId, studentAId, studentBId |
 | Grouping | id, classId, name, createdAt |
 | Room | id, name |
-| Desk | id, roomId, x, y (normalized 0..1) |
+| Desk | id, roomId, x, y (normalized 0..1), seats (1 or 2) |
 | SeatingPlan | id, classId, roomId, name, createdAt |
-| SeatAssignment | planId, deskId, studentId |
+| SeatAssignment | planId, deskId, seatIndex, studentId |
 | GroupingGroup | id, groupingId, index |
 | GroupingMember | groupId, studentId |
 | AppSettings (DataStore, not Room) | weekAReferenceDate, digestTime (default 07:00), lastCsvMapping |
@@ -106,7 +106,7 @@ Mechanics:
 
 ### Rooms & seating plans (plan de classe)
 
-- Rooms are app-level and shared between classes ("Salle 102"). Room editor: free-placement canvas with board marker at top; tap empty space adds a desk, drag moves it, long-press deletes. Desk positions stored normalized (0..1).
+- Rooms are app-level and shared between classes ("Salle 102"). Room editor: free-placement canvas with board marker at top; tap empty space adds a desk (1-seat or 2-seat, chosen by a toggle), drag moves it, long-press opens a menu (switch 1↔2 seats, delete). Desk positions stored normalized (0..1); 2-seat tables render double-width with a divider and each seat is assigned independently. Shrinking a table to 1 seat unassigns its second seat.
 - Seating plans: multiple named plans per class, each tied to a room (like groupings). Create (name + room), open, rename, delete.
 - Placement is manual: tap a free desk → student picker; tap an occupied desk → remove or replace. Unassigned students shown as a chip row; assignments persist immediately.
 - Warning only: if two students under a separation constraint sit adjacent (distance below ~1.5 desk widths), their desks get an error-colored outline.

@@ -18,10 +18,13 @@ fun adjacentDeskPairs(desks: List<Desk>, threshold: Float): Set<Pair<Long, Long>
     return result
 }
 
-/** Desk ids whose seated students violate a separation constraint with an adjacent desk. */
+/**
+ * Desk ids whose seated students violate a separation constraint — either with an
+ * adjacent desk, or with a neighbor on the same multi-seat table.
+ */
 fun violatingDesks(
     desks: List<Desk>,
-    seats: Map<Long, Long>, // deskId -> studentId
+    seats: Map<Long, List<Long>>, // deskId -> studentIds on that table
     separations: Set<Pair<Long, Long>>,
     threshold: Float,
 ): Set<Long> {
@@ -30,11 +33,16 @@ fun violatingDesks(
     }
     val result = mutableSetOf<Long>()
     for ((d1, d2) in adjacentDeskPairs(desks, threshold)) {
-        val s1 = seats[d1] ?: continue
-        val s2 = seats[d2] ?: continue
-        if ((s1 to s2) in forbidden) {
+        val g1 = seats[d1] ?: continue
+        val g2 = seats[d2] ?: continue
+        if (g1.any { a -> g2.any { b -> (a to b) in forbidden } }) {
             result.add(d1)
             result.add(d2)
+        }
+    }
+    for ((deskId, group) in seats) {
+        if (group.any { a -> group.any { b -> a != b && (a to b) in forbidden } }) {
+            result.add(deskId)
         }
     }
     return result
