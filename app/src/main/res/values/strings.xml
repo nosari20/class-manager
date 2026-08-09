@@ -66,4 +66,14 @@
     <string name="import_confirm">Import</string>
     <string name="csv_error_empty">File is empty or has no data rows</string>
     <string name="csv_error_read">Cannot read this file</string>
+    <string name="channel_reminders">Reminders</string>
+    <string name="channel_digest">Daily digest</string>
+    <string name="mark_done">Done</string>
+    <string name="digest_title">%1$d reminders today</string>
+    <string name="add_reminder">Add reminder</string>
+    <string name="reminder_next_lesson">Next lesson</string>
+    <string name="reminder_fixed">Date &amp; time</string>
+    <string name="reminder_digest">Morning digest on a date</string>
+    <string name="pick_date">Pick date</string>
+    <string name="no_timetable_message">This class has no timetable. Add slots first, or pick a date.</string>
 </resources>

@@ -66,4 +66,14 @@
     <string name="import_confirm">Importer</string>
     <string name="csv_error_empty">Fichier vide ou sans données</string>
     <string name="csv_error_read">Impossible de lire ce fichier</string>
+    <string name="channel_reminders">Rappels</string>
+    <string name="channel_digest">Récapitulatif quotidien</string>
+    <string name="mark_done">Fait</string>
+    <string name="digest_title">%1$d rappels aujourd\'hui</string>
+    <string name="add_reminder">Ajouter un rappel</string>
+    <string name="reminder_next_lesson">Prochain cours</string>
+    <string name="reminder_fixed">Date et heure</string>
+    <string name="reminder_digest">Rappel du matin à une date</string>
+    <string name="pick_date">Choisir une date</string>
+    <string name="no_timetable_message">Cette classe n\'a pas d\'emploi du temps. Ajoutez des créneaux, ou choisissez une date.</string>
 </resources>
