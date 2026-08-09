@@ -1,6 +1,7 @@
 package edu.fnosari.classmanager.notifications
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -47,6 +48,7 @@ object NotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
 
+    @SuppressLint("MissingPermission") // hasPermission() checks POST_NOTIFICATIONS
     fun showReminder(context: Context, reminder: Reminder, student: Student) {
         if (!hasPermission(context)) return
         val doneIntent = PendingIntent.getBroadcast(
@@ -67,6 +69,7 @@ object NotificationHelper {
         NotificationManagerCompat.from(context).notify(reminder.id.toInt(), n)
     }
 
+    @SuppressLint("MissingPermission") // hasPermission() checks POST_NOTIFICATIONS
     fun showDigest(context: Context, lines: List<String>) {
         if (!hasPermission(context) || lines.isEmpty()) return
         val style = NotificationCompat.InboxStyle()
