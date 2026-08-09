@@ -14,6 +14,7 @@ import edu.fnosari.classmanager.backup.BackupCheck
 import edu.fnosari.classmanager.backup.BackupCrypto
 import edu.fnosari.classmanager.backup.BackupManager
 import edu.fnosari.classmanager.data.DemoData
+import edu.fnosari.classmanager.ui.AppLocale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -24,6 +25,23 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.Eagerly, "07:00")
     val weekARef = container.settings.weekARef
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    val theme = container.settings.theme
+        .stateIn(viewModelScope, SharingStarted.Eagerly, container.theme)
+
+    /** Reads through to the framework on API 33+, where it owns the per-app language. */
+    fun currentLanguage(context: Context): String = AppLocale.current(context, container.language)
+
+    /** Returns true when the caller must recreate the activity to show the new language. */
+    fun setLanguage(context: Context, tag: String): Boolean {
+        container.setLanguageCache(tag)
+        viewModelScope.launch { container.settings.setLanguage(tag) }
+        return AppLocale.apply(context, tag)
+    }
+
+    fun setTheme(t: String) = viewModelScope.launch {
+        container.theme = t
+        container.settings.setTheme(t)
+    }
 
     // null | "confirm" | "done" | "backup_done" | invalid reason
     var restoreState by mutableStateOf<String?>(null)

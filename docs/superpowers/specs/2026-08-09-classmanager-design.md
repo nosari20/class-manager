@@ -135,8 +135,15 @@ Mechanics:
 | RandomPickerScreen | Reveal animation, pick-again, cycle progress, reset, absence toggles |
 | StudentDetailScreen | Photo, fields, notes timeline, reminders |
 | CsvImportScreen | File → mapping dropdowns → preview → class name/level → confirm |
-| SettingsScreen | Digest time, week A reference, rooms, backup, restore, demo data, calendar sync |
+| SettingsScreen | Language, appearance, digest time, week A reference, rooms, backup, restore, demo data, calendar sync |
 | GlobalTimetableScreen | Read-only week view of ALL classes' occurrences (cancellations + one-offs applied), ‹ › week browser, class-colored cards with room pill; card opens the class. Entry: calendar icon in Today tab top bar |
+
+### Language and appearance (Settings)
+
+Both stored in DataStore (so they travel in `settings.json` backups) and cached in `AppContainer` at startup, because the locale must be applied in `Activity.attachBaseContext`, before the first frame.
+
+- **Language** — System default / Français / English. On API 33+ the framework owns it (`LocaleManager.applicationLocales`), so the choice also appears in Android's per-app language settings and the activity is recreated by the system; `res/xml/locales_config.xml` + `android:localeConfig` declare the supported set. Below API 33 `AppLocale.wrap` overrides the resource configuration and the activity recreates itself. The picker reads back through the framework on 33+ so an OS-side change is reflected.
+- **Appearance** — System default / Light / Dark, resolved by the pure `isDarkTheme(pref, systemDark)`; applies instantly, no recreate.
 
 ### Demo data (Settings)
 

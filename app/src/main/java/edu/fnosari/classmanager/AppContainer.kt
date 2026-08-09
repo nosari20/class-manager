@@ -19,6 +19,20 @@ class AppContainer(context: Context) {
     val backup: BackupManager by lazy { BackupManager(appContext, this) }
     val calendarSync: CalendarSyncManager by lazy { CalendarSyncManager(appContext, this) }
 
+    // cached so the locale wrap in Activity.attachBaseContext and the first theme frame
+    // don't have to wait on DataStore
+    @Volatile var language: String = "system"
+        private set
+    @Volatile var theme: String = "system"
+
+    fun primeUiPrefs() {
+        val (lang, th) = settings.readUiPrefsBlocking()
+        language = lang
+        theme = th
+    }
+
+    fun setLanguageCache(tag: String) { language = tag }
+
     fun reopenDb() {
         db = AppDatabase.build(appContext)
     }

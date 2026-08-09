@@ -1,20 +1,35 @@
 package edu.fnosari.classmanager
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.compose.rememberNavController
+import edu.fnosari.classmanager.ui.AppLocale
 import edu.fnosari.classmanager.ui.AppNavHost
 import edu.fnosari.classmanager.ui.theme.ClassManagerTheme
+import edu.fnosari.classmanager.ui.theme.isDarkTheme
 
 class MainActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: Context) {
+        val tag = (newBase.applicationContext as? ClassManagerApp)?.container?.language
+            ?: AppLocale.SYSTEM
+        super.attachBaseContext(AppLocale.wrap(newBase, tag))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val startStudentId = intent.getLongExtra(EXTRA_STUDENT_ID, -1L).takeIf { it > 0 }
+        val container = appContainer
         setContent {
-            ClassManagerTheme {
+            // cached value first so the very first frame already has the right theme
+            val pref by container.settings.theme.collectAsState(initial = container.theme)
+            ClassManagerTheme(darkTheme = isDarkTheme(pref, isSystemInDarkTheme())) {
                 val nav = rememberNavController()
                 AppNavHost(nav, startStudentId)
             }
