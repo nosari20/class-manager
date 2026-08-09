@@ -35,6 +35,10 @@ Offline-only. No server, no account. French + English UI (French default via sys
 | Reminder | id, studentId, text, type (NEXT_LESSON / MORNING_DIGEST / FIXED_DATETIME), dueAt, done, createdAt |
 | SeparationConstraint | id, classId, studentAId, studentBId |
 | Grouping | id, classId, name, createdAt |
+| Room | id, name |
+| Desk | id, roomId, x, y (normalized 0..1) |
+| SeatingPlan | id, classId, roomId, name, createdAt |
+| SeatAssignment | planId, deskId, studentId |
 | GroupingGroup | id, groupingId, index |
 | GroupingMember | groupId, studentId |
 | AppSettings (DataStore, not Room) | weekAReferenceDate, digestTime (default 07:00), lastCsvMapping |
@@ -99,6 +103,14 @@ Mechanics:
 - Algorithm: shuffle roster, greedily assign each student to the smallest group with no separation violation, backtrack on dead ends, retry with a fresh shuffle (max ~100 attempts). Class sizes ≤ 40 → effectively instant. If infeasible, report the clashing constraints instead of failing silently.
 - Result: group cards; actions: reshuffle, manual edit (move student between groups — constraint-violating moves allowed but flagged red, teacher decides), save with a name (e.g. "TP chimie 12/09").
 - Saved groupings listed per class: view, rename, delete. Regenerate = new grouping.
+
+### Rooms & seating plans (plan de classe)
+
+- Rooms are app-level and shared between classes ("Salle 102"). Room editor: free-placement canvas with board marker at top; tap empty space adds a desk, drag moves it, long-press deletes. Desk positions stored normalized (0..1).
+- Seating plans: multiple named plans per class, each tied to a room (like groupings). Create (name + room), open, rename, delete.
+- Placement is manual: tap a free desk → student picker; tap an occupied desk → remove or replace. Unassigned students shown as a chip row; assignments persist immediately.
+- Warning only: if two students under a separation constraint sit adjacent (distance below ~1.5 desk widths), their desks get an error-colored outline.
+- Cascades: deleting a room deletes its desks/plans/assignments; deleting a class deletes its plans; deleting a student clears their seat.
 
 ### Backup / restore
 
