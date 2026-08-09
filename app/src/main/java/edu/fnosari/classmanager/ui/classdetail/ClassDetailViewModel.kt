@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import edu.fnosari.classmanager.AppContainer
+import edu.fnosari.classmanager.data.OneOffSlot
 import edu.fnosari.classmanager.data.SchoolClass
+import edu.fnosari.classmanager.data.SlotCancellation
 import edu.fnosari.classmanager.data.Student
 import edu.fnosari.classmanager.data.TimetableSlot
 import edu.fnosari.classmanager.data.WeekParityTag
@@ -67,6 +69,29 @@ class ClassDetailViewModel(
         }
 
     fun deleteSlot(t: TimetableSlot) = viewModelScope.launch { db.timetableDao().delete(t) }
+
+    val cancellations = db.timetableDao().cancellationsFor(classId)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val oneOffs = db.timetableDao().oneOffsFor(classId)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val weekARef = container.settings.weekARef
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    fun cancelOccurrence(slotId: Long, date: String) = viewModelScope.launch {
+        db.timetableDao().insertCancellation(SlotCancellation(slotId = slotId, date = date))
+    }
+
+    fun uncancel(c: SlotCancellation) = viewModelScope.launch {
+        db.timetableDao().deleteCancellation(c)
+    }
+
+    fun addOneOff(date: String, start: String, end: String, roomId: Long?) = viewModelScope.launch {
+        db.timetableDao().insertOneOff(
+            OneOffSlot(classId = classId, date = date, startTime = start, endTime = end, roomId = roomId)
+        )
+    }
+
+    fun deleteOneOff(o: OneOffSlot) = viewModelScope.launch { db.timetableDao().deleteOneOff(o) }
 
     companion object {
         fun factory(container: AppContainer, classId: Long) = viewModelFactory {

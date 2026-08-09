@@ -111,4 +111,19 @@
     <string name="no_room">Sans salle</string>
     <string name="current_course">Cours en cours</string>
     <string name="next_course">Prochain cours</string>
+    <string name="tab_today">Aujourd\'hui</string>
+    <string name="tab_classes">Classes</string>
+    <string name="today_courses">Cours du jour</string>
+    <string name="today_reminders">Rappels du jour</string>
+    <string name="no_courses_today">Pas de cours aujourd\'hui</string>
+    <string name="no_reminders_today">Pas de rappel aujourd\'hui</string>
+    <string name="week_of">Semaine du %1$s</string>
+    <string name="recurring">Chaque semaine</string>
+    <string name="one_off">Ponctuel</string>
+    <string name="add_one_off">Ajouter un cours ponctuel cette semaine</string>
+    <string name="restore_occurrence">Rétablir le cours annulé : %1$s</string>
+    <string name="calendar_sync">Synchroniser avec le calendrier</string>
+    <string name="calendar_sync_help">Ajoute les 8 prochaines semaines dans un calendrier « ClassManager »</string>
+    <string name="calendar_sync_done">%1$d cours synchronisés</string>
+    <string name="calendar_sync_failed">Échec de la synchronisation</string>
 </resources>

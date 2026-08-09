@@ -1,5 +1,6 @@
 package edu.fnosari.classmanager.ui.settings
 
+import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -59,6 +60,9 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
     val restoreLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri -> if (uri != null) vm.startRestore(context, uri) }
+    val calendarPermLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { grants -> if (grants.values.all { it }) vm.syncCalendar() }
 
     Scaffold(
         topBar = {
@@ -109,7 +113,35 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
                     restoreLauncher.launch(arrayOf("application/zip", "*/*"))
                 },
             )
+            HorizontalDivider()
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.calendar_sync)) },
+                supportingContent = { Text(stringResource(R.string.calendar_sync_help)) },
+                modifier = Modifier.clickable {
+                    calendarPermLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.READ_CALENDAR,
+                            Manifest.permission.WRITE_CALENDAR,
+                        )
+                    )
+                },
+            )
         }
+    }
+
+    vm.calendarSyncResult?.let { result ->
+        AlertDialog(
+            onDismissRequest = { vm.calendarSyncResult = null },
+            text = {
+                Text(
+                    if (result >= 0) stringResource(R.string.calendar_sync_done, result)
+                    else stringResource(R.string.calendar_sync_failed)
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { vm.calendarSyncResult = null }) { Text("OK") }
+            },
+        )
     }
 
     if (showTimePicker) {

@@ -153,7 +153,18 @@ fun ClassDetailScreen(
                 }
             } else {
                 val rooms by vm.rooms.collectAsStateWithLifecycle()
-                TimetableEditor(slots, rooms, onAdd = vm::addSlot, onDelete = vm::deleteSlot)
+                val cancellations by vm.cancellations.collectAsStateWithLifecycle()
+                val oneOffs by vm.oneOffs.collectAsStateWithLifecycle()
+                val weekARef by vm.weekARef.collectAsStateWithLifecycle()
+                TimetableEditor(
+                    slots, rooms, cancellations, oneOffs, weekARef,
+                    onAdd = vm::addSlot,
+                    onDelete = vm::deleteSlot,
+                    onCancelOccurrence = vm::cancelOccurrence,
+                    onUncancel = vm::uncancel,
+                    onAddOneOff = vm::addOneOff,
+                    onDeleteOneOff = vm::deleteOneOff,
+                )
             }
         }
     }
