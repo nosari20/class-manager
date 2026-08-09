@@ -61,6 +61,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import edu.fnosari.classmanager.R
+import edu.fnosari.classmanager.ui.common.pronoteTopBarColors
 import edu.fnosari.classmanager.appContainer
 import edu.fnosari.classmanager.data.Student
 import edu.fnosari.classmanager.ui.common.PhotoUtil
@@ -89,6 +90,7 @@ fun ClassDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                colors = pronoteTopBarColors(),
                 title = { Text(schoolClass?.name ?: "") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {

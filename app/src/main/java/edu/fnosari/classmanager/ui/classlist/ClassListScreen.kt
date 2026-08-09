@@ -45,8 +45,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.fnosari.classmanager.R
+import edu.fnosari.classmanager.ui.common.pronoteTopBarColors
 import edu.fnosari.classmanager.appContainer
 import edu.fnosari.classmanager.data.SchoolClass
+import androidx.compose.ui.text.font.FontWeight
+import edu.fnosari.classmanager.ui.common.AccentPill
+import edu.fnosari.classmanager.ui.common.SectionLabel
+import edu.fnosari.classmanager.ui.common.stripeEdge
+import edu.fnosari.classmanager.ui.theme.classColor
 import edu.fnosari.classmanager.ui.timetable.dayName
 import kotlinx.coroutines.launch
 
@@ -72,6 +78,7 @@ fun ClassListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                colors = pronoteTopBarColors(),
                 title = { Text(stringResource(R.string.classes_title)) },
                 actions = {
                     IconButton(onClick = onSettings) {
@@ -117,29 +124,43 @@ fun ClassListScreen(
                             }),
                         colors = CardDefaults.cardColors(
                             containerColor = if (b.isCurrent) MaterialTheme.colorScheme.primaryContainer
-                            else MaterialTheme.colorScheme.secondaryContainer,
+                            else MaterialTheme.colorScheme.surface,
                         ),
                     ) {
-                        Column(Modifier.padding(16.dp)) {
-                            Text(
+                        val accent = classColor(b.schoolClass.id)
+                        Column(
+                            Modifier
+                                .fillMaxWidth()
+                                .stripeEdge(accent)
+                                .padding(start = 28.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
+                        ) {
+                            SectionLabel(
                                 stringResource(
                                     if (b.isCurrent) R.string.current_course else R.string.next_course
                                 ),
-                                style = MaterialTheme.typography.labelMedium,
                             )
-                            val roomPart = b.roomName?.let { " — $it" } ?: ""
-                            val whenPart = if (b.isCurrent) {
-                                "${b.slot.startTime}–${b.slot.endTime}"
-                            } else {
-                                b.startAt?.let {
-                                    "${dayName(b.slot.dayOfWeek)} ${b.slot.startTime}"
-                                } ?: ""
-                            }
                             Text(
-                                "${b.schoolClass.name}$roomPart",
-                                style = MaterialTheme.typography.titleMedium,
+                                b.schoolClass.name,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(top = 4.dp),
                             )
-                            Text(whenPart, style = MaterialTheme.typography.bodyMedium)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(top = 8.dp),
+                            ) {
+                                b.roomName?.let {
+                                    AccentPill(it, accent, Modifier.padding(end = 8.dp))
+                                }
+                                val whenPart = if (b.isCurrent) {
+                                    "${b.slot.startTime}–${b.slot.endTime}"
+                                } else {
+                                    b.startAt?.let {
+                                        "${dayName(b.slot.dayOfWeek)} ${b.slot.startTime}"
+                                    } ?: ""
+                                }
+                                Text(whenPart, style = MaterialTheme.typography.bodyMedium)
+                            }
                         }
                     }
                 }
@@ -153,17 +174,34 @@ fun ClassListScreen(
                             onClick = { onOpenClass(row.schoolClass.id) },
                             onLongClick = { editing = row.schoolClass },
                         ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                    ),
                 ) {
-                    Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    val accent = classColor(row.schoolClass.id)
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .stripeEdge(accent)
+                            .padding(start = 28.dp, top = 12.dp, end = 8.dp, bottom = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         Column(Modifier.weight(1f)) {
-                            Text(row.schoolClass.name, style = MaterialTheme.typography.titleMedium)
                             Text(
-                                "${row.schoolClass.level} — ${row.studentCount}",
-                                style = MaterialTheme.typography.bodyMedium,
+                                row.schoolClass.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
                             )
+                            Row(Modifier.padding(top = 6.dp)) {
+                                AccentPill(
+                                    "${row.schoolClass.level} · ${row.studentCount}",
+                                    accent,
+                                )
+                            }
                         }
                         IconButton(onClick = { deleting = row.schoolClass }) {
-                            Icon(Icons.Default.Delete, stringResource(R.string.delete))
+                            Icon(Icons.Default.Delete, stringResource(R.string.delete),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
