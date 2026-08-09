@@ -13,6 +13,7 @@ import edu.fnosari.classmanager.AppContainer
 import edu.fnosari.classmanager.backup.BackupCheck
 import edu.fnosari.classmanager.backup.BackupCrypto
 import edu.fnosari.classmanager.backup.BackupManager
+import edu.fnosari.classmanager.data.DemoData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -30,6 +31,15 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
 
     // null | synced event count | -1 on failure
     var calendarSyncResult by mutableStateOf<Int?>(null)
+
+    // null | "confirm" | "done"
+    var demoState by mutableStateOf<String?>(null)
+
+    fun createDemoData() = viewModelScope.launch(Dispatchers.IO) {
+        DemoData.seed(container.db)
+        runCatching { container.alarms.rescheduleAll() }
+        demoState = "done"
+    }
 
     fun syncCalendar() = viewModelScope.launch(Dispatchers.IO) {
         calendarSyncResult = try {

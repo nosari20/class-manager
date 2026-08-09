@@ -28,6 +28,7 @@ fun HomeScreen(
     onOpenSeating: (Long) -> Unit,
     onOpenSeatingPlans: (Long) -> Unit,
     onOpenStudent: (Long) -> Unit,
+    onOpenTimetable: () -> Unit,
 ) {
     var tab by rememberSaveable { mutableIntStateOf(0) }
     Scaffold(
@@ -54,6 +55,7 @@ fun HomeScreen(
                     onOpenSeating = onOpenSeating,
                     onOpenSeatingPlans = onOpenSeatingPlans,
                     onOpenStudent = onOpenStudent,
+                    onOpenTimetable = onOpenTimetable,
                 )
             } else {
                 ClassListScreen(

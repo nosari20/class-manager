@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Class Manager</string>
+    <string name="app_name">MaClasse</string>
     <string name="classes_title">Classes</string>
     <string name="new_class">Nouvelle classe</string>
     <string name="import_csv">Importer un CSV</string>
@@ -123,7 +123,7 @@
     <string name="add_one_off">Ajouter un cours ponctuel cette semaine</string>
     <string name="restore_occurrence">Rétablir le cours annulé : %1$s</string>
     <string name="calendar_sync">Synchroniser avec le calendrier</string>
-    <string name="calendar_sync_help">Ajoute les 8 prochaines semaines dans un calendrier « ClassManager »</string>
+    <string name="calendar_sync_help">Ajoute les 8 prochaines semaines dans un calendrier « MaClasse »</string>
     <string name="calendar_sync_done">%1$d cours synchronisés</string>
     <string name="calendar_sync_failed">Échec de la synchronisation</string>
     <string name="ok">OK</string>
@@ -133,4 +133,9 @@
     <string name="backup_password_help">Définissez un mot de passe pour chiffrer la sauvegarde et protéger les données des élèves. Laissez vide pour un fichier non chiffré. Sans le mot de passe, une sauvegarde chiffrée ne peut pas être restaurée.</string>
     <string name="restore_password_help">Cette sauvegarde est chiffrée. Saisissez son mot de passe.</string>
     <string name="bad_password">Mot de passe incorrect — réessayez.</string>
+    <string name="week_empty">Aucun cours cette semaine</string>
+    <string name="demo_data">Créer des données de démo</string>
+    <string name="demo_data_help">Ajoute des classes, élèves, salles et rappels d\'exemple pour découvrir l\'application</string>
+    <string name="demo_data_confirm">Ajouter des classes, salles et rappels de démonstration ? Vos données existantes sont conservées.</string>
+    <string name="demo_data_done">Données de démo créées</string>
 </resources>

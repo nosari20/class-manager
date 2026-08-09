@@ -292,7 +292,9 @@ fun RoomEditorScreen(roomId: Long, onBack: () -> Unit) {
                     val extra = dragOffsets.value[d.id] ?: Offset.Zero
                     Modifier
                         .offset { IntOffset(extra.x.roundToInt(), extra.y.roundToInt()) }
-                        .pointerInput(d.id) {
+                        // key on the full desk: a stale capture here would overwrite
+                        // rotation/seats when the drag ends
+                        .pointerInput(d) {
                             detectDragGestures(
                                 onDrag = { change, amount ->
                                     change.consume()
@@ -307,7 +309,7 @@ fun RoomEditorScreen(roomId: Long, onBack: () -> Unit) {
                                 onDragCancel = { dragOffsets.value = dragOffsets.value - d.id },
                             )
                         }
-                        .pointerInput(d.id) {
+                        .pointerInput(d) {
                             detectTapGestures(onLongPress = { deskMenu = d })
                         }
                 },

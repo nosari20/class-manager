@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Class Manager</string>
+    <string name="app_name">MaClasse</string>
     <string name="classes_title">Classes</string>
     <string name="new_class">New class</string>
     <string name="import_csv">Import CSV</string>
@@ -123,7 +123,7 @@
     <string name="add_one_off">Add one-off course this week</string>
     <string name="restore_occurrence">Restore cancelled: %1$s</string>
     <string name="calendar_sync">Sync to phone calendar</string>
-    <string name="calendar_sync_help">Pushes the next 8 weeks into a “ClassManager” calendar</string>
+    <string name="calendar_sync_help">Pushes the next 8 weeks into a “MaClasse” calendar</string>
     <string name="calendar_sync_done">%1$d courses synced to calendar</string>
     <string name="calendar_sync_failed">Calendar sync failed</string>
     <string name="ok">OK</string>
@@ -133,4 +133,9 @@
     <string name="backup_password_help">Set a password to encrypt the backup and protect student data. Leave empty for a plain file. Without the password, an encrypted backup cannot be restored.</string>
     <string name="restore_password_help">This backup is encrypted. Enter its password.</string>
     <string name="bad_password">Wrong password — try again.</string>
+    <string name="week_empty">No courses this week</string>
+    <string name="demo_data">Create demo data</string>
+    <string name="demo_data_help">Adds sample classes, students, rooms and reminders to explore the app</string>
+    <string name="demo_data_confirm">Add demo classes, rooms and reminders? Your existing data is kept.</string>
+    <string name="demo_data_done">Demo data created</string>
 </resources>
