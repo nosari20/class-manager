@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material.icons.filled.Chair
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PersonAdd
@@ -72,6 +73,7 @@ fun ClassDetailScreen(
     onOpenStudent: (Long) -> Unit,
     onPicker: () -> Unit,
     onGroups: () -> Unit,
+    onSeating: () -> Unit,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -99,6 +101,9 @@ fun ClassDetailScreen(
                     }
                     IconButton(onClick = onGroups) {
                         Icon(Icons.Default.Groups, stringResource(R.string.groups))
+                    }
+                    IconButton(onClick = onSeating) {
+                        Icon(Icons.Default.Chair, stringResource(R.string.seating_plans))
                     }
                 },
             )

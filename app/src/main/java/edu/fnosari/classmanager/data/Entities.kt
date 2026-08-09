@@ -130,6 +130,55 @@ data class GroupingGroup(
     @ColumnInfo(name = "groupIndex") val index: Int,
 )
 
+@Entity(tableName = "room")
+data class Room(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val name: String,
+)
+
+@Entity(
+    tableName = "desk",
+    foreignKeys = [ForeignKey(entity = Room::class, parentColumns = ["id"],
+        childColumns = ["roomId"], onDelete = ForeignKey.CASCADE)],
+    indices = [Index("roomId")],
+)
+data class Desk(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val roomId: Long,
+    val x: Float,   // normalized 0..1 across room canvas
+    val y: Float,
+)
+
+@Entity(
+    tableName = "seating_plan",
+    foreignKeys = [
+        ForeignKey(entity = SchoolClass::class, parentColumns = ["id"], childColumns = ["classId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = Room::class, parentColumns = ["id"], childColumns = ["roomId"], onDelete = ForeignKey.CASCADE)],
+    indices = [Index("classId"), Index("roomId")],
+)
+data class SeatingPlan(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val classId: Long,
+    val roomId: Long,
+    val name: String,
+    val createdAt: Long = System.currentTimeMillis(),
+)
+
+@Entity(
+    tableName = "seat_assignment",
+    primaryKeys = ["planId", "deskId"],
+    foreignKeys = [
+        ForeignKey(entity = SeatingPlan::class, parentColumns = ["id"], childColumns = ["planId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = Desk::class, parentColumns = ["id"], childColumns = ["deskId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = Student::class, parentColumns = ["id"], childColumns = ["studentId"], onDelete = ForeignKey.CASCADE)],
+    indices = [Index("deskId"), Index("studentId")],
+)
+data class SeatAssignment(
+    val planId: Long,
+    val deskId: Long,
+    val studentId: Long,
+)
+
 @Entity(
     tableName = "grouping_member",
     primaryKeys = ["groupId", "studentId"],

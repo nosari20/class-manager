@@ -17,6 +17,10 @@ import edu.fnosari.classmanager.ui.classlist.ClassListScreen
 import edu.fnosari.classmanager.ui.csv.CsvImportScreen
 import edu.fnosari.classmanager.ui.groups.GroupsScreen
 import edu.fnosari.classmanager.ui.picker.PickerScreen
+import edu.fnosari.classmanager.ui.rooms.RoomEditorScreen
+import edu.fnosari.classmanager.ui.rooms.RoomsScreen
+import edu.fnosari.classmanager.ui.seating.SeatingPlansScreen
+import edu.fnosari.classmanager.ui.seating.SeatingScreen
 import edu.fnosari.classmanager.ui.settings.SettingsScreen
 import edu.fnosari.classmanager.ui.student.StudentDetailScreen
 
@@ -28,10 +32,17 @@ object Routes {
     const val GROUPS = "groups/{classId}"
     const val CSV_IMPORT = "csvImport"
     const val SETTINGS = "settings"
+    const val ROOMS = "rooms"
+    const val ROOM_EDITOR = "room/{roomId}"
+    const val SEATING_PLANS = "seatingPlans/{classId}"
+    const val SEATING = "seating/{planId}"
     fun classDetail(id: Long) = "class/$id"
     fun student(id: Long) = "student/$id"
     fun picker(classId: Long) = "picker/$classId"
     fun groups(classId: Long) = "groups/$classId"
+    fun roomEditor(id: Long) = "room/$id"
+    fun seatingPlans(classId: Long) = "seatingPlans/$classId"
+    fun seating(planId: Long) = "seating/$planId"
 }
 
 @Composable
@@ -54,6 +65,7 @@ fun AppNavHost(nav: NavHostController, startStudentId: Long?) {
                 onOpenStudent = { id -> nav.navigate(Routes.student(id)) },
                 onPicker = { nav.navigate(Routes.picker(classId)) },
                 onGroups = { nav.navigate(Routes.groups(classId)) },
+                onSeating = { nav.navigate(Routes.seatingPlans(classId)) },
                 onBack = { nav.popBackStack() },
             )
         }
@@ -83,12 +95,42 @@ fun AppNavHost(nav: NavHostController, startStudentId: Long?) {
                 onBack = { nav.popBackStack() },
             )
         }
+        composable(Routes.ROOMS) {
+            RoomsScreen(
+                onOpenRoom = { nav.navigate(Routes.roomEditor(it)) },
+                onBack = { nav.popBackStack() },
+            )
+        }
+        composable(
+            Routes.ROOM_EDITOR,
+            arguments = listOf(navArgument("roomId") { type = NavType.LongType }),
+        ) {
+            RoomEditorScreen(it.arguments!!.getLong("roomId"), onBack = { nav.popBackStack() })
+        }
+        composable(
+            Routes.SEATING_PLANS,
+            arguments = listOf(navArgument("classId") { type = NavType.LongType }),
+        ) {
+            SeatingPlansScreen(
+                it.arguments!!.getLong("classId"),
+                onOpenPlan = { id -> nav.navigate(Routes.seating(id)) },
+                onManageRooms = { nav.navigate(Routes.ROOMS) },
+                onBack = { nav.popBackStack() },
+            )
+        }
+        composable(
+            Routes.SEATING,
+            arguments = listOf(navArgument("planId") { type = NavType.LongType }),
+        ) {
+            SeatingScreen(it.arguments!!.getLong("planId"), onBack = { nav.popBackStack() })
+        }
         composable(Routes.SETTINGS) {
             SettingsScreen(
                 onBack = { nav.popBackStack() },
                 onRestored = {
                     nav.navigate(Routes.CLASS_LIST) { popUpTo(0) { inclusive = true } }
                 },
+                onRooms = { nav.navigate(Routes.ROOMS) },
             )
         }
     }

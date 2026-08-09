@@ -82,7 +82,7 @@ class BackupManager(private val context: Context, private val container: AppCont
     }
 
     companion object {
-        const val SCHEMA_VERSION = 1
+        const val SCHEMA_VERSION = 2
 
         fun validate(zipBytes: ByteArray): BackupCheck {
             val entries = mutableMapOf<String, ByteArray>()

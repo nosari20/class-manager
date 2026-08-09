@@ -56,6 +56,23 @@ class DaoTest {
         assertEquals(2, db.studentDao().eligibleForPick(c, "2026-08-10").size)
     }
 
+    @Test fun seatingRoundTripAndCascades() = runBlocking {
+        val c = db.classDao().insert(SchoolClass(name = "3eA", level = "3e"))
+        val s1 = db.studentDao().insert(Student(classId = c, lastName = "A", firstName = "a"))
+        val roomId = db.seatingDao().insertRoom(Room(name = "Salle 102"))
+        val deskId = db.seatingDao().insertDesk(Desk(roomId = roomId, x = 0.5f, y = 0.5f))
+        val planId = db.seatingDao().insertPlan(SeatingPlan(classId = c, roomId = roomId, name = "Plan A"))
+        db.seatingDao().assign(SeatAssignment(planId = planId, deskId = deskId, studentId = s1))
+        assertEquals(1, db.seatingDao().assignments(planId).first().size)
+        // replace on same desk
+        val s2 = db.studentDao().insert(Student(classId = c, lastName = "B", firstName = "b"))
+        db.seatingDao().assign(SeatAssignment(planId = planId, deskId = deskId, studentId = s2))
+        assertEquals(s2, db.seatingDao().assignments(planId).first().single().studentId)
+        // deleting room cascades desks, plans stay? plan has FK to room -> cascade too
+        db.seatingDao().deleteRoom(db.seatingDao().roomById(roomId)!!)
+        assertEquals(0, db.seatingDao().plansFor(c).first().size)
+    }
+
     @Test fun groupingRoundTrip() = runBlocking {
         val c = db.classDao().insert(SchoolClass(name = "4eC", level = "4e"))
         val s1 = db.studentDao().insert(Student(classId = c, lastName = "A", firstName = "a"))
