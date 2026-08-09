@@ -12,9 +12,9 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         CustomField::class, Reminder::class, SeparationConstraint::class,
         Grouping::class, GroupingGroup::class, GroupingMember::class,
         Room::class, Desk::class, SeatingPlan::class, SeatAssignment::class],
-    version = 3,
+    version = 4,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 1, to = 2)],
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 3, to = 4)],
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun classDao(): ClassDao

@@ -107,4 +107,5 @@
     <string name="desk_options">Desk</string>
     <string name="make_two_seats">Make 2-seat table</string>
     <string name="make_one_seat">Make 1-seat table</string>
+    <string name="rotate_desk">Rotate</string>
 </resources>

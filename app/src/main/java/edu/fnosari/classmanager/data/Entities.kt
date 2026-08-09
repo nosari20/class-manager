@@ -148,6 +148,7 @@ data class Desk(
     val x: Float,   // normalized 0..1 across room canvas
     val y: Float,
     @ColumnInfo(defaultValue = "1") val seats: Int = 1,   // 1 or 2
+    @ColumnInfo(defaultValue = "0") val vertical: Boolean = false,   // 2-seat table rotated 90°
 )
 
 @Entity(
