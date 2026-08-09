@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Class Manager</string>
+    <string name="classes_title">Classes</string>
+    <string name="new_class">Nouvelle classe</string>
+    <string name="import_csv">Importer un CSV</string>
+    <string name="settings">Réglages</string>
+    <string name="students">Élèves</string>
+    <string name="timetable">Emploi du temps</string>
+    <string name="random_picker">Tirage au sort</string>
+    <string name="groups">Groupes</string>
+    <string name="cancel">Annuler</string>
+    <string name="save">Enregistrer</string>
+    <string name="delete">Supprimer</string>
+    <string name="back">Retour</string>
+    <string name="confirm_delete_class">Supprimer cette classe et tous ses élèves ?</string>
+    <string name="class_name">Nom de la classe</string>
+    <string name="class_level">Niveau</string>
+</resources>

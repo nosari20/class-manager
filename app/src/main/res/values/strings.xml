@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Class Manager</string>
+    <string name="classes_title">Classes</string>
+    <string name="new_class">New class</string>
+    <string name="import_csv">Import CSV</string>
+    <string name="settings">Settings</string>
+    <string name="students">Students</string>
+    <string name="timetable">Timetable</string>
+    <string name="random_picker">Random picker</string>
+    <string name="groups">Groups</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="back">Back</string>
+    <string name="confirm_delete_class">Delete this class and all its students?</string>
+    <string name="class_name">Class name</string>
+    <string name="class_level">Level</string>
 </resources>
