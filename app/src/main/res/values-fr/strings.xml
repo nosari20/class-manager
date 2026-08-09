@@ -128,4 +128,9 @@
     <string name="calendar_sync_failed">Échec de la synchronisation</string>
     <string name="ok">OK</string>
     <string name="parity_both">Toutes les semaines</string>
+    <string name="backup_help">Enregistrer toutes les données dans un fichier (Drive, SD…)</string>
+    <string name="backup_password">Mot de passe (facultatif)</string>
+    <string name="backup_password_help">Définissez un mot de passe pour chiffrer la sauvegarde et protéger les données des élèves. Laissez vide pour un fichier non chiffré. Sans le mot de passe, une sauvegarde chiffrée ne peut pas être restaurée.</string>
+    <string name="restore_password_help">Cette sauvegarde est chiffrée. Saisissez son mot de passe.</string>
+    <string name="bad_password">Mot de passe incorrect — réessayez.</string>
 </resources>
