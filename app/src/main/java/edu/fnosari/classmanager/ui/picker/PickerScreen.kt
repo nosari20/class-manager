@@ -43,7 +43,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.fnosari.classmanager.R
 import edu.fnosari.classmanager.ui.common.pronoteTopBarColors
 import edu.fnosari.classmanager.appContainer
+import androidx.compose.material3.CardDefaults
 import edu.fnosari.classmanager.ui.classdetail.StudentAvatar
+import edu.fnosari.classmanager.ui.common.stripeEdge
+import edu.fnosari.classmanager.ui.theme.classColor
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -86,7 +89,13 @@ fun PickerScreen(classId: Long, onBack: () -> Unit) {
                     modifier = Modifier.padding(bottom = 8.dp),
                 )
             }
-            Card(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+            val accent = classColor(classId)
+            Card(
+                Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
+            ) {
                 AnimatedContent(
                     targetState = current,
                     transitionSpec = {
@@ -95,7 +104,7 @@ fun PickerScreen(classId: Long, onBack: () -> Unit) {
                     label = "pick",
                 ) { s ->
                     Column(
-                        Modifier.fillMaxWidth().padding(24.dp),
+                        Modifier.fillMaxWidth().stripeEdge(accent).padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         if (s == null) {
@@ -122,6 +131,7 @@ fun PickerScreen(classId: Long, onBack: () -> Unit) {
             Text("$picked/${students.size}", style = MaterialTheme.typography.labelLarge)
             LinearProgressIndicator(
                 progress = { if (students.isEmpty()) 0f else picked.toFloat() / students.size },
+                color = accent,
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             )
 

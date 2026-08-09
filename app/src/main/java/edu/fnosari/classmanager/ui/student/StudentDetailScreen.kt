@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -58,6 +59,9 @@ import edu.fnosari.classmanager.data.CustomField
 import edu.fnosari.classmanager.data.Note
 import edu.fnosari.classmanager.data.ReminderType
 import edu.fnosari.classmanager.ui.classdetail.StudentAvatar
+import edu.fnosari.classmanager.ui.common.SectionLabel
+import edu.fnosari.classmanager.ui.common.stripeEdge
+import edu.fnosari.classmanager.ui.theme.classColor
 import java.text.DateFormat
 import java.time.Instant
 import java.time.ZoneId
@@ -139,8 +143,18 @@ fun StudentDetailScreen(studentId: Long, onBack: () -> Unit) {
                 SectionHeader(stringResource(R.string.notes)) { addingNote = true }
             }
             items(notes, key = { "n${it.id}" }) { n ->
-                Card(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                    Column(Modifier.padding(12.dp)) {
+                val accent = student?.let { classColor(it.classId) }
+                    ?: MaterialTheme.colorScheme.primary
+                Card(
+                    Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                    ),
+                ) {
+                    Column(
+                        Modifier.fillMaxWidth().stripeEdge(accent)
+                            .padding(start = 24.dp, top = 8.dp, end = 8.dp, bottom = 12.dp),
+                    ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 DateFormat.getDateInstance().format(Date(n.createdAt)),
@@ -151,7 +165,7 @@ fun StudentDetailScreen(studentId: Long, onBack: () -> Unit) {
                                 Icon(Icons.Default.Delete, stringResource(R.string.delete))
                             }
                         }
-                        Text(n.text, Modifier.fillMaxWidth().padding(top = 4.dp))
+                        Text(n.text, Modifier.fillMaxWidth().padding(top = 2.dp))
                     }
                 }
             }
@@ -342,13 +356,15 @@ private fun ReminderDialog(
 @Composable
 private fun SectionHeader(title: String, onAdd: (() -> Unit)?) {
     Row(
-        Modifier.fillMaxWidth().padding(top = 8.dp),
+        Modifier.fillMaxWidth().padding(top = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text(title, style = MaterialTheme.typography.titleMedium)
+        SectionLabel(title)
         if (onAdd != null) {
-            IconButton(onClick = onAdd) { Icon(Icons.Default.Add, null) }
+            IconButton(onClick = onAdd) {
+                Icon(Icons.Default.Add, null, tint = MaterialTheme.colorScheme.primary)
+            }
         }
     }
 }

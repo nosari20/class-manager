@@ -20,6 +20,10 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import edu.fnosari.classmanager.ui.common.AccentPill
+import edu.fnosari.classmanager.ui.common.SectionLabel
+import edu.fnosari.classmanager.ui.common.stripeEdge
+import edu.fnosari.classmanager.ui.theme.ClassPalette
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -103,7 +107,7 @@ fun GroupsScreen(classId: Long, onBack: () -> Unit) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text(stringResource(R.string.constraints), style = MaterialTheme.typography.titleMedium)
+                    SectionLabel(stringResource(R.string.constraints))
                     IconButton(onClick = { addingConstraint = true }) { Icon(Icons.Default.Add, null) }
                 }
             }
@@ -204,10 +208,9 @@ fun GroupsScreen(classId: Long, onBack: () -> Unit) {
 
             // --- Saved groupings ---
             item {
-                Text(
+                SectionLabel(
                     stringResource(R.string.saved_groupings),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(top = 16.dp),
+                    Modifier.padding(top = 16.dp),
                 )
             }
             items(groupings, key = { "g${it.id}" }) { g ->
@@ -276,12 +279,18 @@ private fun androidx.compose.foundation.lazy.LazyListScope.itemsIndexedGroups(
 ) {
     groups.forEachIndexed { i, members ->
         item(key = "grp$i-${members.hashCode()}") {
-            Card(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                Column(Modifier.padding(12.dp)) {
-                    Text(
-                        stringResource(R.string.group_n, i + 1),
-                        style = MaterialTheme.typography.titleSmall,
-                    )
+            val accent = ClassPalette[i % ClassPalette.size]
+            Card(
+                Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
+            ) {
+                Column(
+                    Modifier.fillMaxWidth().stripeEdge(accent)
+                        .padding(start = 26.dp, top = 12.dp, end = 8.dp, bottom = 12.dp),
+                ) {
+                    AccentPill(stringResource(R.string.group_n, i + 1), accent)
                     members.forEach { s ->
                         val violating = violations.any { (a, b) ->
                             (a == s.id || b == s.id) &&

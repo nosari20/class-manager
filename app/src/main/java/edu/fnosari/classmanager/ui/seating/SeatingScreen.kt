@@ -57,8 +57,14 @@ import edu.fnosari.classmanager.appContainer
 import edu.fnosari.classmanager.data.Room
 import edu.fnosari.classmanager.data.SeatingPlan
 import edu.fnosari.classmanager.data.Student
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.text.font.FontWeight
+import edu.fnosari.classmanager.ui.common.AccentPill
+import edu.fnosari.classmanager.ui.common.stripeEdge
 import edu.fnosari.classmanager.ui.rooms.RoomCanvas
 import edu.fnosari.classmanager.ui.rooms.SeatSlots
+import edu.fnosari.classmanager.ui.theme.classColor
 import java.text.DateFormat
 import java.util.Date
 import kotlinx.coroutines.launch
@@ -106,19 +112,48 @@ fun SeatingPlansScreen(
             contentPadding = PaddingValues(vertical = 8.dp),
         ) {
             items(plans, key = { it.id }) { p ->
-                val roomName = rooms.firstOrNull { it.id == p.roomId }?.name ?: ""
-                ListItem(
-                    headlineContent = { Text(p.name) },
-                    supportingContent = {
-                        Text("$roomName — ${DateFormat.getDateInstance().format(Date(p.createdAt))}")
-                    },
-                    trailingContent = {
-                        IconButton(onClick = { deleting = p }) {
-                            Icon(Icons.Default.Delete, stringResource(R.string.delete))
+                val roomName = rooms.firstOrNull { it.id == p.roomId }?.name
+                val accent = classColor(classId)
+                Card(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                        .clickable { onOpenPlan(p.id) },
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                    ),
+                ) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .stripeEdge(accent)
+                            .padding(start = 26.dp, top = 12.dp, end = 8.dp, bottom = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                p.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+                            Row(Modifier.padding(top = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically) {
+                                roomName?.let {
+                                    AccentPill(it, accent, Modifier.padding(end = 8.dp))
+                                }
+                                Text(
+                                    DateFormat.getDateInstance().format(Date(p.createdAt)),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
                         }
-                    },
-                    modifier = Modifier.clickable { onOpenPlan(p.id) },
-                )
+                        IconButton(onClick = { deleting = p }) {
+                            Icon(Icons.Default.Delete, stringResource(R.string.delete),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                }
             }
         }
     }
