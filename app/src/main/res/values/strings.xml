@@ -15,4 +15,20 @@
     <string name="confirm_delete_class">Delete this class and all its students?</string>
     <string name="class_name">Class name</string>
     <string name="class_level">Level</string>
+    <string name="add_student">Add student</string>
+    <string name="edit_student">Edit student</string>
+    <string name="last_name">Last name</string>
+    <string name="first_name">First name</string>
+    <string name="confirm_delete_student">Delete this student and all their notes and reminders?</string>
+    <string name="add_slot">Add slot</string>
+    <string name="start_time">Start (HH:mm)</string>
+    <string name="end_time">End (HH:mm)</string>
+    <string name="week_parity_label">Week %1$s</string>
+    <string name="mon">Monday</string>
+    <string name="tue">Tuesday</string>
+    <string name="wed">Wednesday</string>
+    <string name="thu">Thursday</string>
+    <string name="fri">Friday</string>
+    <string name="sat">Saturday</string>
+    <string name="sun">Sunday</string>
 </resources>

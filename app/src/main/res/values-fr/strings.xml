@@ -15,4 +15,20 @@
     <string name="confirm_delete_class">Supprimer cette classe et tous ses élèves ?</string>
     <string name="class_name">Nom de la classe</string>
     <string name="class_level">Niveau</string>
+    <string name="add_student">Ajouter un élève</string>
+    <string name="edit_student">Modifier l\'élève</string>
+    <string name="last_name">Nom</string>
+    <string name="first_name">Prénom</string>
+    <string name="confirm_delete_student">Supprimer cet élève ainsi que ses notes et rappels ?</string>
+    <string name="add_slot">Ajouter un créneau</string>
+    <string name="start_time">Début (HH:mm)</string>
+    <string name="end_time">Fin (HH:mm)</string>
+    <string name="week_parity_label">Semaine %1$s</string>
+    <string name="mon">Lundi</string>
+    <string name="tue">Mardi</string>
+    <string name="wed">Mercredi</string>
+    <string name="thu">Jeudi</string>
+    <string name="fri">Vendredi</string>
+    <string name="sat">Samedi</string>
+    <string name="sun">Dimanche</string>
 </resources>
