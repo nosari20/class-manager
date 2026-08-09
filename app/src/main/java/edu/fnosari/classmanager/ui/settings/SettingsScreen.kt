@@ -139,7 +139,7 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
                 )
             },
             confirmButton = {
-                TextButton(onClick = { vm.calendarSyncResult = null }) { Text("OK") }
+                TextButton(onClick = { vm.calendarSyncResult = null }) { Text(stringResource(R.string.ok)) }
             },
         )
     }
@@ -218,28 +218,28 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
             onDismissRequest = { vm.dismissDialog() },
             text = { Text(stringResource(R.string.backup_done)) },
             confirmButton = {
-                TextButton(onClick = { vm.dismissDialog() }) { Text("OK") }
+                TextButton(onClick = { vm.dismissDialog() }) { Text(stringResource(R.string.ok)) }
             },
         )
         "backup_failed" -> AlertDialog(
             onDismissRequest = { vm.dismissDialog() },
             text = { Text(stringResource(R.string.backup_failed)) },
             confirmButton = {
-                TextButton(onClick = { vm.dismissDialog() }) { Text("OK") }
+                TextButton(onClick = { vm.dismissDialog() }) { Text(stringResource(R.string.ok)) }
             },
         )
         "bad_schema_version" -> AlertDialog(
             onDismissRequest = { vm.dismissDialog() },
             text = { Text(stringResource(R.string.restore_newer)) },
             confirmButton = {
-                TextButton(onClick = { vm.dismissDialog() }) { Text("OK") }
+                TextButton(onClick = { vm.dismissDialog() }) { Text(stringResource(R.string.ok)) }
             },
         )
         else -> AlertDialog(
             onDismissRequest = { vm.dismissDialog() },
             text = { Text(stringResource(R.string.restore_invalid)) },
             confirmButton = {
-                TextButton(onClick = { vm.dismissDialog() }) { Text("OK") }
+                TextButton(onClick = { vm.dismissDialog() }) { Text(stringResource(R.string.ok)) }
             },
         )
     }

@@ -12,6 +12,7 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
@@ -38,6 +39,16 @@ class BackupManager(private val context: Context, private val container: AppCont
             z.closeEntry()
             z.putNextEntry(ZipEntry("classmanager.db"))
             dbFile.inputStream().use { it.copyTo(z) }
+            z.closeEntry()
+            z.putNextEntry(ZipEntry("settings.json"))
+            val settings = JSONObject()
+            container.settings.weekARef.first()?.let { settings.put("weekARef", it) }
+            settings.put("digestTime", container.settings.digestTime.first())
+            container.settings.csvMapping.first()?.let { (l, f) ->
+                settings.put("csvLast", l)
+                settings.put("csvFirst", f)
+            }
+            z.write(settings.toString().toByteArray())
             z.closeEntry()
             container.photosDir.listFiles()?.forEach { f ->
                 z.putNextEntry(ZipEntry("photos/${f.name}"))
@@ -75,6 +86,18 @@ class BackupManager(private val context: Context, private val container: AppCont
         container.photosDir.mkdirs()
         File(tmp, "photos").listFiles()?.forEach {
             it.copyTo(File(container.photosDir, it.name), overwrite = true)
+        }
+        // settings.json is optional: pre-v6 backups don't carry it
+        val settingsFile = File(tmp, "settings.json")
+        if (settingsFile.exists()) {
+            runCatching {
+                val json = JSONObject(settingsFile.readText())
+                if (json.has("weekARef")) container.settings.setWeekARef(json.getString("weekARef"))
+                if (json.has("digestTime")) container.settings.setDigestTime(json.getString("digestTime"))
+                if (json.has("csvLast") && json.has("csvFirst")) {
+                    container.settings.setCsvMapping(json.getInt("csvLast"), json.getInt("csvFirst"))
+                }
+            }
         }
         tmp.deleteRecursively()
         container.reopenDb()
