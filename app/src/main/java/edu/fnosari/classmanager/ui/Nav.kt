@@ -53,6 +53,8 @@ fun AppNavHost(nav: NavHostController, startStudentId: Long?) {
                 onOpenClass = { nav.navigate(Routes.classDetail(it)) },
                 onImportCsv = { nav.navigate(Routes.CSV_IMPORT) },
                 onSettings = { nav.navigate(Routes.SETTINGS) },
+                onOpenSeating = { nav.navigate(Routes.seating(it)) },
+                onOpenSeatingPlans = { nav.navigate(Routes.seatingPlans(it)) },
             )
         }
         composable(

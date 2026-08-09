@@ -12,7 +12,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         CustomField::class, Reminder::class, SeparationConstraint::class,
         Grouping::class, GroupingGroup::class, GroupingMember::class,
         Room::class, Desk::class, SeatingPlan::class, SeatAssignment::class],
-    version = 4,
+    version = 5,
     exportSchema = true,
     autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 3, to = 4)],
 )
@@ -53,9 +53,32 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        // v5: timetable_slot gains nullable roomId with SET_NULL FK — table rebuild
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE timetable_slot_new (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "classId INTEGER NOT NULL, dayOfWeek INTEGER NOT NULL, " +
+                        "startTime TEXT NOT NULL, endTime TEXT NOT NULL, " +
+                        "weekParity TEXT NOT NULL, roomId INTEGER, " +
+                        "FOREIGN KEY(classId) REFERENCES school_class(id) ON UPDATE NO ACTION ON DELETE CASCADE, " +
+                        "FOREIGN KEY(roomId) REFERENCES room(id) ON UPDATE NO ACTION ON DELETE SET NULL)"
+                )
+                db.execSQL(
+                    "INSERT INTO timetable_slot_new (id, classId, dayOfWeek, startTime, endTime, weekParity) " +
+                        "SELECT id, classId, dayOfWeek, startTime, endTime, weekParity FROM timetable_slot"
+                )
+                db.execSQL("DROP TABLE timetable_slot")
+                db.execSQL("ALTER TABLE timetable_slot_new RENAME TO timetable_slot")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_timetable_slot_classId ON timetable_slot (classId)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_timetable_slot_roomId ON timetable_slot (roomId)")
+            }
+        }
+
         fun build(context: Context): AppDatabase =
             androidx.room.Room.databaseBuilder(context, AppDatabase::class.java, DB_NAME)
-                .addMigrations(MIGRATION_2_3)
+                .addMigrations(MIGRATION_2_3, MIGRATION_4_5)
                 .build()
     }
 }

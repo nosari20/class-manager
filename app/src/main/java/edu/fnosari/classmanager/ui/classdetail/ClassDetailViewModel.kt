@@ -32,6 +32,8 @@ class ClassDetailViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val slots: StateFlow<List<TimetableSlot>> = db.timetableDao().slotsFor(classId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val rooms = db.seatingDao().rooms()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList<edu.fnosari.classmanager.data.Room>())
 
     fun addStudent(last: String, first: String, photoUri: Uri?, context: Context) =
         viewModelScope.launch(Dispatchers.IO) {
@@ -56,11 +58,13 @@ class ClassDetailViewModel(
         s.photoPath?.let { File(container.photosDir.parentFile, it).delete() }
     }
 
-    fun addSlot(day: Int, start: String, end: String, parity: WeekParityTag) = viewModelScope.launch {
-        db.timetableDao().insert(
-            TimetableSlot(classId = classId, dayOfWeek = day, startTime = start, endTime = end, weekParity = parity)
-        )
-    }
+    fun addSlot(day: Int, start: String, end: String, parity: WeekParityTag, roomId: Long?) =
+        viewModelScope.launch {
+            db.timetableDao().insert(
+                TimetableSlot(classId = classId, dayOfWeek = day, startTime = start,
+                    endTime = end, weekParity = parity, roomId = roomId)
+            )
+        }
 
     fun deleteSlot(t: TimetableSlot) = viewModelScope.launch { db.timetableDao().delete(t) }
 

@@ -150,7 +150,8 @@ fun ClassDetailScreen(
                     }
                 }
             } else {
-                TimetableEditor(slots, onAdd = vm::addSlot, onDelete = vm::deleteSlot)
+                val rooms by vm.rooms.collectAsStateWithLifecycle()
+                TimetableEditor(slots, rooms, onAdd = vm::addSlot, onDelete = vm::deleteSlot)
             }
         }
     }

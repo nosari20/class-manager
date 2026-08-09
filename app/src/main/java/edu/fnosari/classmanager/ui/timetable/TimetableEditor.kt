@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import edu.fnosari.classmanager.R
+import edu.fnosari.classmanager.data.Room
 import edu.fnosari.classmanager.data.TimetableSlot
 import edu.fnosari.classmanager.data.WeekParityTag
 
@@ -47,19 +48,24 @@ fun dayName(iso: Int): String {
 @Composable
 fun TimetableEditor(
     slots: List<TimetableSlot>,
-    onAdd: (day: Int, start: String, end: String, parity: WeekParityTag) -> Unit,
+    rooms: List<Room>,
+    onAdd: (day: Int, start: String, end: String, parity: WeekParityTag, roomId: Long?) -> Unit,
     onDelete: (TimetableSlot) -> Unit,
 ) {
     var showAdd by remember { mutableStateOf(false) }
+    val roomNames = rooms.associate { it.id to it.name }
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         LazyColumn(Modifier.weight(1f)) {
             items(slots, key = { it.id }) { s ->
                 ListItem(
                     headlineContent = { Text("${dayName(s.dayOfWeek)} ${s.startTime}–${s.endTime}") },
                     supportingContent = {
+                        val parts = mutableListOf<String>()
+                        s.roomId?.let { roomNames[it] }?.let { parts.add(it) }
                         if (s.weekParity != WeekParityTag.BOTH) {
-                            Text(stringResource(R.string.week_parity_label, s.weekParity.name))
+                            parts.add(stringResource(R.string.week_parity_label, s.weekParity.name))
                         }
+                        if (parts.isNotEmpty()) Text(parts.joinToString(" — "))
                     },
                     trailingContent = {
                         IconButton(onClick = { onDelete(s) }) {
@@ -74,8 +80,8 @@ fun TimetableEditor(
         }
     }
     if (showAdd) {
-        SlotDialog(onDismiss = { showAdd = false }) { d, st, en, p ->
-            onAdd(d, st, en, p); showAdd = false
+        SlotDialog(rooms, onDismiss = { showAdd = false }) { d, st, en, p, r ->
+            onAdd(d, st, en, p, r); showAdd = false
         }
     }
 }
@@ -83,14 +89,17 @@ fun TimetableEditor(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SlotDialog(
+    rooms: List<Room>,
     onDismiss: () -> Unit,
-    onSave: (Int, String, String, WeekParityTag) -> Unit,
+    onSave: (Int, String, String, WeekParityTag, Long?) -> Unit,
 ) {
     var day by remember { mutableStateOf(1) }
     var dayMenu by remember { mutableStateOf(false) }
     var start by remember { mutableStateOf("08:00") }
     var end by remember { mutableStateOf("09:00") }
     var parity by remember { mutableStateOf(WeekParityTag.BOTH) }
+    var room by remember { mutableStateOf<Room?>(null) }
+    var roomMenu by remember { mutableStateOf(false) }
     val valid = TIME_RE.matches(start) && TIME_RE.matches(end) && start < end
 
     AlertDialog(
@@ -117,6 +126,30 @@ private fun SlotDialog(
                     label = { Text(stringResource(R.string.start_time)) })
                 OutlinedTextField(end, { end = it },
                     label = { Text(stringResource(R.string.end_time)) })
+                if (rooms.isNotEmpty()) {
+                    ExposedDropdownMenuBox(expanded = roomMenu, onExpandedChange = { roomMenu = it }) {
+                        OutlinedTextField(
+                            value = room?.name ?: stringResource(R.string.no_room),
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text(stringResource(R.string.room_name)) },
+                            trailingIcon = { Icon(Icons.Default.ArrowDropDown, null) },
+                            modifier = Modifier.menuAnchor(),
+                        )
+                        ExposedDropdownMenu(expanded = roomMenu, onDismissRequest = { roomMenu = false }) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.no_room)) },
+                                onClick = { room = null; roomMenu = false },
+                            )
+                            rooms.forEach { r ->
+                                DropdownMenuItem(
+                                    text = { Text(r.name) },
+                                    onClick = { room = r; roomMenu = false },
+                                )
+                            }
+                        }
+                    }
+                }
                 SingleChoiceSegmentedButtonRow(Modifier.padding(top = 8.dp)) {
                     WeekParityTag.entries.forEachIndexed { i, tag ->
                         SegmentedButton(
@@ -129,7 +162,7 @@ private fun SlotDialog(
             }
         },
         confirmButton = {
-            TextButton(enabled = valid, onClick = { onSave(day, start, end, parity) }) {
+            TextButton(enabled = valid, onClick = { onSave(day, start, end, parity, room?.id) }) {
                 Text(stringResource(R.string.save))
             }
         },

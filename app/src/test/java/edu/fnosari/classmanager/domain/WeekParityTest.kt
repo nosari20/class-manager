@@ -63,4 +63,32 @@ class WeekParityTest {
     @Test fun noSlotsReturnsNull() {
         assertNull(nextLessonStart(LocalDateTime.of(2026, 8, 3, 7, 0), emptyList(), refMonday))
     }
+
+    @Test fun currentSlotFoundDuringLesson() {
+        val slots = listOf(slot(1, "08:00")) // Mon 08:00-10:00
+        val now = LocalDateTime.of(2026, 8, 3, 8, 30)
+        assertEquals(slots[0], currentSlot(now, slots, refMonday))
+    }
+
+    @Test fun currentSlotNullOutsideLesson() {
+        val slots = listOf(slot(1, "08:00"))
+        assertNull(currentSlot(LocalDateTime.of(2026, 8, 3, 10, 0), slots, refMonday)) // end exclusive
+        assertNull(currentSlot(LocalDateTime.of(2026, 8, 3, 7, 59), slots, refMonday))
+        assertNull(currentSlot(LocalDateTime.of(2026, 8, 4, 8, 30), slots, refMonday)) // wrong day
+    }
+
+    @Test fun currentSlotHonorsParity() {
+        val slots = listOf(slot(1, "08:00", WeekParityTag.B))
+        // 2026-08-03 is week A -> B-only slot not current
+        assertNull(currentSlot(LocalDateTime.of(2026, 8, 3, 8, 30), slots, refMonday))
+        // next Monday is week B -> current
+        assertEquals(slots[0], currentSlot(LocalDateTime.of(2026, 8, 10, 8, 30), slots, refMonday))
+    }
+
+    @Test fun nextSlotWithTimeReturnsSlotAndStart() {
+        val s = slot(1, "08:00")
+        val r = nextSlotWithTime(LocalDateTime.of(2026, 8, 3, 9, 0), listOf(s), refMonday)
+        assertEquals(s, r!!.first)
+        assertEquals(LocalDateTime.of(2026, 8, 10, 8, 0), r.second)
+    }
 }

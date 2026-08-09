@@ -28,16 +28,39 @@ fun nextLessonStart(
     from: LocalDateTime,
     slots: List<TimetableSlot>,
     weekARef: LocalDate?,
-): LocalDateTime? {
+): LocalDateTime? = nextSlotWithTime(from, slots, weekARef)?.second
+
+/** Earliest future slot within 15 days, with its concrete start time. */
+fun nextSlotWithTime(
+    from: LocalDateTime,
+    slots: List<TimetableSlot>,
+    weekARef: LocalDate?,
+): Pair<TimetableSlot, LocalDateTime>? {
     if (slots.isEmpty()) return null
     for (offset in 0..15L) {
         val date = from.toLocalDate().plusDays(offset)
         val candidates = slots
             .filter { it.dayOfWeek == date.dayOfWeek.value && it.matchesParity(date, weekARef) }
-            .map { LocalDateTime.of(date, LocalTime.parse(it.startTime)) }
-            .filter { it.isAfter(from) }
-            .sorted()
+            .map { it to LocalDateTime.of(date, LocalTime.parse(it.startTime)) }
+            .filter { it.second.isAfter(from) }
+            .sortedBy { it.second }
         if (candidates.isNotEmpty()) return candidates.first()
     }
     return null
+}
+
+/** Slot running right now (start inclusive, end exclusive), honoring A/B parity. */
+fun currentSlot(
+    now: LocalDateTime,
+    slots: List<TimetableSlot>,
+    weekARef: LocalDate?,
+): TimetableSlot? {
+    val date = now.toLocalDate()
+    val time = now.toLocalTime()
+    return slots.firstOrNull {
+        it.dayOfWeek == date.dayOfWeek.value &&
+            it.matchesParity(date, weekARef) &&
+            !time.isBefore(LocalTime.parse(it.startTime)) &&
+            time.isBefore(LocalTime.parse(it.endTime))
+    }
 }
