@@ -98,8 +98,10 @@ import kotlinx.coroutines.flow.Flow
     @Query("SELECT * FROM seating_plan WHERE id = :id") suspend fun planById(id: Long): SeatingPlan?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun assign(a: SeatAssignment)
-    @Query("DELETE FROM seat_assignment WHERE planId = :planId AND deskId = :deskId")
-    suspend fun unassign(planId: Long, deskId: Long)
+    @Query("DELETE FROM seat_assignment WHERE planId = :planId AND deskId = :deskId AND seatIndex = :seatIndex")
+    suspend fun unassign(planId: Long, deskId: Long, seatIndex: Int)
+    @Query("DELETE FROM seat_assignment WHERE deskId = :deskId AND seatIndex >= :fromIndex")
+    suspend fun unassignSeatsFrom(deskId: Long, fromIndex: Int)
     @Query("DELETE FROM seat_assignment WHERE planId = :planId AND studentId = :studentId")
     suspend fun unassignStudent(planId: Long, studentId: Long)
     @Query("SELECT * FROM seat_assignment WHERE planId = :planId")

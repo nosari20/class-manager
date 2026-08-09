@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -229,8 +230,8 @@ fun SeatingScreen(planId: Long, onBack: () -> Unit) {
     val vm: SeatingViewModel =
         viewModel(factory = SeatingViewModel.factory(LocalContext.current.appContainer, planId))
     val state by vm.state.collectAsStateWithLifecycle()
-    var pickingFor by remember { mutableStateOf<Long?>(null) }   // deskId needing a student
-    var occupiedTap by remember { mutableStateOf<Long?>(null) }  // occupied deskId tapped
+    var pickingFor by remember { mutableStateOf<Pair<Long, Int>?>(null) }   // (deskId, seatIndex) needing a student
+    var occupiedTap by remember { mutableStateOf<Pair<Long, Int>?>(null) }  // occupied (deskId, seatIndex) tapped
 
     Scaffold(
         topBar = {
@@ -257,38 +258,44 @@ fun SeatingScreen(planId: Long, onBack: () -> Unit) {
                 desks = state.desks,
                 deskModifier = { d, _, _ ->
                     val violating = d.id in state.violatingDeskIds
-                    Modifier
-                        .border(
-                            width = if (violating) 3.dp else 1.dp,
-                            color = if (violating) MaterialTheme.colorScheme.error
-                            else MaterialTheme.colorScheme.outline,
-                            shape = RoundedCornerShape(8.dp),
-                        )
-                        .clickable {
-                            if (state.seats.containsKey(d.id)) occupiedTap = d.id
-                            else pickingFor = d.id
-                        }
+                    Modifier.border(
+                        width = if (violating) 3.dp else 1.dp,
+                        color = if (violating) MaterialTheme.colorScheme.error
+                        else MaterialTheme.colorScheme.outline,
+                        shape = RoundedCornerShape(8.dp),
+                    )
                 },
                 deskContent = { d ->
-                    val student = state.seats[d.id]
-                    androidx.compose.foundation.layout.Box(
-                        Modifier
-                            .fillMaxSize()
-                            .background(
-                                if (student != null) MaterialTheme.colorScheme.primaryContainer
-                                else MaterialTheme.colorScheme.surface,
-                                RoundedCornerShape(8.dp),
-                            ),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            student?.let {
-                                "${it.firstName}\n${it.lastName.take(1)}."
-                            } ?: "",
-                            style = MaterialTheme.typography.labelSmall,
-                            textAlign = TextAlign.Center,
-                            maxLines = 2,
-                        )
+                    Row(Modifier.fillMaxSize()) {
+                        repeat(d.seats) { seatIndex ->
+                            val student = state.seats[d.id]?.get(seatIndex)
+                            androidx.compose.foundation.layout.Box(
+                                Modifier
+                                    .weight(1f)
+                                    .fillMaxSize()
+                                    .background(
+                                        if (student != null) MaterialTheme.colorScheme.primaryContainer
+                                        else MaterialTheme.colorScheme.surface,
+                                        if (d.seats == 1) RoundedCornerShape(8.dp)
+                                        else if (seatIndex == 0) RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp)
+                                        else RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp),
+                                    )
+                                    .clickable {
+                                        if (student != null) occupiedTap = d.id to seatIndex
+                                        else pickingFor = d.id to seatIndex
+                                    },
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text(
+                                    student?.let {
+                                        "${it.firstName}\n${it.lastName.take(1)}."
+                                    } ?: "",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    textAlign = TextAlign.Center,
+                                    maxLines = 2,
+                                )
+                            }
+                        }
                     }
                 },
             )
@@ -306,22 +313,23 @@ fun SeatingScreen(planId: Long, onBack: () -> Unit) {
         }
     }
 
-    pickingFor?.let { deskId ->
+    pickingFor?.let { (deskId, seatIndex) ->
         StudentPickDialog(
-            students = state.unassigned + state.seats.values.sortedBy { it.lastName },
+            students = state.unassigned +
+                state.seats.values.flatMap { it.values }.sortedBy { it.lastName },
             onDismiss = { pickingFor = null },
         ) { s ->
-            vm.assign(deskId, s.id)
+            vm.assign(deskId, seatIndex, s.id)
             pickingFor = null
         }
     }
-    occupiedTap?.let { deskId ->
-        val student = state.seats[deskId]
+    occupiedTap?.let { (deskId, seatIndex) ->
+        val student = state.seats[deskId]?.get(seatIndex)
         AlertDialog(
             onDismissRequest = { occupiedTap = null },
             title = { Text(student?.let { "${it.firstName} ${it.lastName}" } ?: "") },
             confirmButton = {
-                TextButton(onClick = { vm.unassign(deskId); occupiedTap = null }) {
+                TextButton(onClick = { vm.unassign(deskId, seatIndex); occupiedTap = null }) {
                     Text(stringResource(R.string.remove_from_seat))
                 }
             },

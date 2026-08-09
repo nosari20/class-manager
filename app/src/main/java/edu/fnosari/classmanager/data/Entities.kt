@@ -147,6 +147,7 @@ data class Desk(
     val roomId: Long,
     val x: Float,   // normalized 0..1 across room canvas
     val y: Float,
+    @ColumnInfo(defaultValue = "1") val seats: Int = 1,   // 1 or 2
 )
 
 @Entity(
@@ -166,7 +167,7 @@ data class SeatingPlan(
 
 @Entity(
     tableName = "seat_assignment",
-    primaryKeys = ["planId", "deskId"],
+    primaryKeys = ["planId", "deskId", "seatIndex"],
     foreignKeys = [
         ForeignKey(entity = SeatingPlan::class, parentColumns = ["id"], childColumns = ["planId"], onDelete = ForeignKey.CASCADE),
         ForeignKey(entity = Desk::class, parentColumns = ["id"], childColumns = ["deskId"], onDelete = ForeignKey.CASCADE),
@@ -176,6 +177,7 @@ data class SeatingPlan(
 data class SeatAssignment(
     val planId: Long,
     val deskId: Long,
+    @ColumnInfo(defaultValue = "0") val seatIndex: Int = 0,   // 0 = left, 1 = right
     val studentId: Long,
 )
 

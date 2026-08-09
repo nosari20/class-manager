@@ -51,7 +51,7 @@ data class SeatingUiState(
     val plan: SeatingPlan? = null,
     val room: Room? = null,
     val desks: List<Desk> = emptyList(),
-    val seats: Map<Long, Student> = emptyMap(),   // deskId -> student
+    val seats: Map<Long, Map<Int, Student>> = emptyMap(),   // deskId -> seatIndex -> student
     val unassigned: List<Student> = emptyList(),
     val violatingDeskIds: Set<Long> = emptySet(),
 )
@@ -72,10 +72,11 @@ class SeatingViewModel(container: AppContainer, private val planId: Long) : View
                 flow { emit(dao.roomById(plan.roomId)) },
             ) { desks, assignments, students, constraints, room ->
                 val byId = students.associateBy { it.id }
-                val seats = assignments.mapNotNull { a ->
-                    byId[a.studentId]?.let { a.deskId to it }
-                }.toMap()
-                val seatedIds = seats.values.map { it.id }.toSet()
+                val seats: Map<Long, Map<Int, Student>> = assignments
+                    .mapNotNull { a -> byId[a.studentId]?.let { Triple(a.deskId, a.seatIndex, it) } }
+                    .groupBy({ it.first }, { it.second to it.third })
+                    .mapValues { (_, list) -> list.toMap() }
+                val seatedIds = seats.values.flatMap { it.values }.map { it.id }.toSet()
                 val seps = constraints.map { it.studentAId to it.studentBId }.toSet()
                 SeatingUiState(
                     plan = plan,
@@ -84,19 +85,24 @@ class SeatingViewModel(container: AppContainer, private val planId: Long) : View
                     seats = seats,
                     unassigned = students.filter { it.id !in seatedIds },
                     violatingDeskIds = violatingDesks(
-                        desks, seats.mapValues { it.value.id }, seps, ADJACENCY_THRESHOLD
+                        desks,
+                        seats.mapValues { (_, m) -> m.values.map { it.id } },
+                        seps,
+                        ADJACENCY_THRESHOLD,
                     ),
                 )
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SeatingUiState())
 
-    fun assign(deskId: Long, studentId: Long) = viewModelScope.launch {
+    fun assign(deskId: Long, seatIndex: Int, studentId: Long) = viewModelScope.launch {
         dao.unassignStudent(planId, studentId) // student moves if already seated elsewhere
-        dao.assign(SeatAssignment(planId = planId, deskId = deskId, studentId = studentId))
+        dao.assign(SeatAssignment(planId = planId, deskId = deskId, seatIndex = seatIndex, studentId = studentId))
     }
 
-    fun unassign(deskId: Long) = viewModelScope.launch { dao.unassign(planId, deskId) }
+    fun unassign(deskId: Long, seatIndex: Int) = viewModelScope.launch {
+        dao.unassign(planId, deskId, seatIndex)
+    }
 
     companion object {
         fun factory(container: AppContainer, planId: Long) = viewModelFactory {

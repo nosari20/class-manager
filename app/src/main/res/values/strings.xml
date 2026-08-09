@@ -102,4 +102,9 @@
     <string name="unassigned_students">Not seated (%1$d)</string>
     <string name="pick_student">Choose student</string>
     <string name="remove_from_seat">Remove from seat</string>
+    <string name="one_seat">1 seat</string>
+    <string name="two_seats">2 seats</string>
+    <string name="desk_options">Desk</string>
+    <string name="make_two_seats">Make 2-seat table</string>
+    <string name="make_one_seat">Make 1-seat table</string>
 </resources>

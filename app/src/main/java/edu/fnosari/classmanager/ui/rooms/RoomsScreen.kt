@@ -1,11 +1,13 @@
 package edu.fnosari.classmanager.ui.rooms
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +32,9 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -198,15 +203,16 @@ fun RoomCanvas(
             modifier = Modifier.align(Alignment.TopCenter).padding(top = 18.dp),
         )
         desks.forEach { d ->
+            val deskWidthPx = deskPx * d.seats
             Box(
                 Modifier
                     .offset {
                         IntOffset(
-                            (d.x * canvasW - deskPx / 2).roundToInt(),
+                            (d.x * canvasW - deskWidthPx / 2).roundToInt(),
                             (d.y * canvasH - deskPx / 2).roundToInt(),
                         )
                     }
-                    .size(DESK_SIZE)
+                    .size(width = DESK_SIZE * d.seats, height = DESK_SIZE)
                     .then(deskModifier(d, canvasW, canvasH)),
             ) {
                 deskContent(d)
@@ -222,7 +228,8 @@ fun RoomEditorScreen(roomId: Long, onBack: () -> Unit) {
         viewModel(factory = RoomEditorViewModel.factory(LocalContext.current.appContainer, roomId))
     val desks by vm.desks.collectAsStateWithLifecycle()
     val room by vm.room.collectAsStateWithLifecycle()
-    var deleting by remember { mutableStateOf<Desk?>(null) }
+    var deskMenu by remember { mutableStateOf<Desk?>(null) }
+    var newDeskSeats by remember { mutableStateOf(1) }
     // live drag offsets in px, per desk
     val dragOffsets = remember { mutableStateOf(mapOf<Long, Offset>()) }
 
@@ -244,9 +251,21 @@ fun RoomEditorScreen(roomId: Long, onBack: () -> Unit) {
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(bottom = 8.dp),
             )
+            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                SegmentedButton(
+                    selected = newDeskSeats == 1,
+                    onClick = { newDeskSeats = 1 },
+                    shape = SegmentedButtonDefaults.itemShape(0, 2),
+                ) { Text(stringResource(R.string.one_seat)) }
+                SegmentedButton(
+                    selected = newDeskSeats == 2,
+                    onClick = { newDeskSeats = 2 },
+                    shape = SegmentedButtonDefaults.itemShape(1, 2),
+                ) { Text(stringResource(R.string.two_seats)) }
+            }
             RoomCanvas(
                 desks = desks,
-                onTapEmpty = { x, y -> vm.addDesk(x, y) },
+                onTapEmpty = { x, y -> vm.addDesk(x, y, newDeskSeats) },
                 deskModifier = { d, cw, ch ->
                     val extra = dragOffsets.value[d.id] ?: Offset.Zero
                     Modifier
@@ -267,37 +286,63 @@ fun RoomEditorScreen(roomId: Long, onBack: () -> Unit) {
                             )
                         }
                         .pointerInput(d.id) {
-                            detectTapGestures(onLongPress = { deleting = d })
+                            detectTapGestures(onLongPress = { deskMenu = d })
                         }
                 },
                 deskContent = { d ->
-                    Box(
+                    Row(
                         Modifier
                             .fillMaxSize()
                             .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(8.dp)),
-                        contentAlignment = Alignment.Center,
                     ) {
-                        Text(
-                            "${desks.indexOfFirst { it.id == d.id } + 1}",
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        )
+                        repeat(d.seats) { i ->
+                            Box(
+                                Modifier
+                                    .weight(1f)
+                                    .fillMaxSize()
+                                    .then(
+                                        if (i > 0) Modifier.border(
+                                            0.5.dp, MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.3f)
+                                        ) else Modifier
+                                    ),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                if (i == 0) {
+                                    Text(
+                                        "${desks.indexOfFirst { it.id == d.id } + 1}",
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    )
+                                }
+                            }
+                        }
                     }
                 },
             )
         }
     }
 
-    deleting?.let { d ->
+    deskMenu?.let { d ->
         AlertDialog(
-            onDismissRequest = { deleting = null },
-            text = { Text(stringResource(R.string.confirm_delete_desk)) },
-            confirmButton = {
-                TextButton(onClick = { vm.deleteDesk(d); deleting = null }) {
-                    Text(stringResource(R.string.delete))
+            onDismissRequest = { deskMenu = null },
+            title = { Text(stringResource(R.string.desk_options)) },
+            text = {
+                Column {
+                    TextButton(onClick = {
+                        vm.setSeats(d, if (d.seats == 1) 2 else 1)
+                        deskMenu = null
+                    }) {
+                        Text(stringResource(
+                            if (d.seats == 1) R.string.make_two_seats else R.string.make_one_seat
+                        ))
+                    }
+                    TextButton(onClick = { vm.deleteDesk(d); deskMenu = null }) {
+                        Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
+                    }
                 }
             },
+            confirmButton = {},
             dismissButton = {
-                TextButton(onClick = { deleting = null }) { Text(stringResource(R.string.cancel)) }
+                TextButton(onClick = { deskMenu = null }) { Text(stringResource(R.string.cancel)) }
             },
         )
     }
