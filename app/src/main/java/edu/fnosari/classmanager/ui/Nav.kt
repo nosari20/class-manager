@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import edu.fnosari.classmanager.ui.classdetail.ClassDetailScreen
 import edu.fnosari.classmanager.ui.classlist.ClassListScreen
+import edu.fnosari.classmanager.ui.picker.PickerScreen
 import edu.fnosari.classmanager.ui.student.StudentDetailScreen
 
 object Routes {
@@ -63,7 +64,7 @@ fun AppNavHost(nav: NavHostController, startStudentId: Long?) {
             Routes.PICKER,
             arguments = listOf(navArgument("classId") { type = NavType.LongType }),
         ) {
-            PlaceholderScreen("Picker")
+            PickerScreen(it.arguments!!.getLong("classId"), onBack = { nav.popBackStack() })
         }
         composable(
             Routes.GROUPS,

@@ -38,4 +38,9 @@
     <string name="add_field">Add field</string>
     <string name="field_key">Label</string>
     <string name="field_value">Value</string>
+    <string name="pick">Pick</string>
+    <string name="tap_to_pick">Tap Pick to draw a student</string>
+    <string name="cycle_restarted">Everyone was picked — new round!</string>
+    <string name="absent_today">Absent today</string>
+    <string name="reset_cycle">Reset round</string>
 </resources>

@@ -38,4 +38,9 @@
     <string name="add_field">Ajouter une information</string>
     <string name="field_key">Intitulé</string>
     <string name="field_value">Valeur</string>
+    <string name="pick">Tirer</string>
+    <string name="tap_to_pick">Appuyez sur Tirer pour choisir un élève</string>
+    <string name="cycle_restarted">Tout le monde est passé — nouveau tour !</string>
+    <string name="absent_today">Absents aujourd\'hui</string>
+    <string name="reset_cycle">Réinitialiser le tour</string>
 </resources>
