@@ -395,7 +395,12 @@ private fun SlotDialog(
                             selected = parity == tag,
                             onClick = { parity = tag },
                             shape = SegmentedButtonDefaults.itemShape(i, WeekParityTag.entries.size),
-                        ) { Text(tag.name) }
+                        ) {
+                            Text(
+                                if (tag == WeekParityTag.BOTH) stringResource(R.string.parity_both)
+                                else tag.name
+                            )
+                        }
                     }
                 }
             }

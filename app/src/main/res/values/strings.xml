@@ -126,4 +126,6 @@
     <string name="calendar_sync_help">Pushes the next 8 weeks into a “ClassManager” calendar</string>
     <string name="calendar_sync_done">%1$d courses synced to calendar</string>
     <string name="calendar_sync_failed">Calendar sync failed</string>
+    <string name="ok">OK</string>
+    <string name="parity_both">All weeks</string>
 </resources>

@@ -114,7 +114,7 @@ Mechanics:
 
 ### Backup / restore
 
-- **Backup:** Room checkpoint (`wal_checkpoint(TRUNCATE)`) → zip `classmanager.db` + `photos/` + `manifest.json` (schema version, app version, date) → SAF create-document (`application/zip`), filename `classmanager-backup-YYYY-MM-DD.zip`. User picks Google Drive or any destination.
+- **Backup:** Room checkpoint (`wal_checkpoint(TRUNCATE)`) → zip `classmanager.db` + `photos/` + `manifest.json` (schema version, app version, date) + `settings.json` (week A reference, digest time, CSV column mapping) → SAF create-document (`application/zip`), filename `classmanager-backup-YYYY-MM-DD.zip`. User picks Google Drive or any destination. The DB file carries every Room table (classes, students, notes, fields, reminders, constraints, groupings, rooms, desks, seating plans, assignments, slot cancellations, one-off slots).
 - **Restore:** SAF open-document → validate zip structure + manifest before touching anything → explicit confirmation dialog ("replaces all current data") → close DB, swap files, reopen, reschedule all alarms.
 - Any failure during validation or extraction leaves current data untouched (extract to temp dir, atomic swap).
 - Manifest schema version checked; newer-than-app versions rejected with message.
