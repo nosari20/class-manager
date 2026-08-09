@@ -24,6 +24,8 @@ import kotlinx.coroutines.flow.Flow
     @Delete suspend fun delete(s: Student)
     @Query("SELECT * FROM student WHERE id = :id") suspend fun byId(id: Long): Student?
     @Query("SELECT * FROM student WHERE id = :id") fun byIdFlow(id: Long): Flow<Student?>
+    @Query("SELECT * FROM student ORDER BY lastName, firstName")
+    fun allStudents(): Flow<List<Student>>
     @Query("SELECT * FROM student WHERE classId = :classId ORDER BY lastName, firstName")
     fun studentsIn(classId: Long): Flow<List<Student>>
     @Query("SELECT * FROM student WHERE classId = :classId ORDER BY lastName, firstName")
@@ -49,6 +51,20 @@ import kotlinx.coroutines.flow.Flow
     suspend fun slotsForOnce(classId: Long): List<TimetableSlot>
     @Query("SELECT * FROM timetable_slot")
     fun allSlots(): Flow<List<TimetableSlot>>
+
+    @Insert suspend fun insertCancellation(c: SlotCancellation): Long
+    @Delete suspend fun deleteCancellation(c: SlotCancellation)
+    @Query("SELECT * FROM slot_cancellation")
+    fun allCancellations(): Flow<List<SlotCancellation>>
+    @Query("SELECT sc.* FROM slot_cancellation sc JOIN timetable_slot t ON t.id = sc.slotId WHERE t.classId = :classId")
+    fun cancellationsFor(classId: Long): Flow<List<SlotCancellation>>
+
+    @Insert suspend fun insertOneOff(o: OneOffSlot): Long
+    @Delete suspend fun deleteOneOff(o: OneOffSlot)
+    @Query("SELECT * FROM one_off_slot")
+    fun allOneOffs(): Flow<List<OneOffSlot>>
+    @Query("SELECT * FROM one_off_slot WHERE classId = :classId")
+    fun oneOffsFor(classId: Long): Flow<List<OneOffSlot>>
 }
 
 @Dao interface NoteDao {
@@ -77,6 +93,8 @@ import kotlinx.coroutines.flow.Flow
     @Query("SELECT * FROM reminder WHERE done = 0") suspend fun allPending(): List<Reminder>
     @Query("SELECT * FROM reminder WHERE done = 0 AND dueAt >= :dayStart AND dueAt < :dayEnd")
     suspend fun dueBetween(dayStart: Long, dayEnd: Long): List<Reminder>
+    @Query("SELECT * FROM reminder WHERE dueAt >= :dayStart AND dueAt < :dayEnd ORDER BY done, dueAt")
+    fun remindersBetween(dayStart: Long, dayEnd: Long): Flow<List<Reminder>>
     @Query("UPDATE reminder SET done = 1 WHERE id = :id") suspend fun markDone(id: Long)
 }
 

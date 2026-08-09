@@ -27,6 +27,17 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
     var restoreState by mutableStateOf<String?>(null)
     private var pendingRestore: ByteArray? = null
 
+    // null | synced event count | -1 on failure
+    var calendarSyncResult by mutableStateOf<Int?>(null)
+
+    fun syncCalendar() = viewModelScope.launch(Dispatchers.IO) {
+        calendarSyncResult = try {
+            container.calendarSync.sync()
+        } catch (e: Exception) {
+            -1
+        }
+    }
+
     fun setDigestTime(t: String) = viewModelScope.launch {
         container.settings.setDigestTime(t)
         container.alarms.scheduleDailyDigest()

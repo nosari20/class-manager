@@ -111,4 +111,19 @@
     <string name="no_room">No room</string>
     <string name="current_course">Current course</string>
     <string name="next_course">Next course</string>
+    <string name="tab_today">Today</string>
+    <string name="tab_classes">Classes</string>
+    <string name="today_courses">Today\'s courses</string>
+    <string name="today_reminders">Today\'s reminders</string>
+    <string name="no_courses_today">No courses today</string>
+    <string name="no_reminders_today">No reminders today</string>
+    <string name="week_of">Week of %1$s</string>
+    <string name="recurring">Every week</string>
+    <string name="one_off">One-off</string>
+    <string name="add_one_off">Add one-off course this week</string>
+    <string name="restore_occurrence">Restore cancelled: %1$s</string>
+    <string name="calendar_sync">Sync to phone calendar</string>
+    <string name="calendar_sync_help">Pushes the next 8 weeks into a “ClassManager” calendar</string>
+    <string name="calendar_sync_done">%1$d courses synced to calendar</string>
+    <string name="calendar_sync_failed">Calendar sync failed</string>
 </resources>

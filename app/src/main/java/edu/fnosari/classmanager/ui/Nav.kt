@@ -13,8 +13,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import edu.fnosari.classmanager.ui.classdetail.ClassDetailScreen
-import edu.fnosari.classmanager.ui.classlist.ClassListScreen
 import edu.fnosari.classmanager.ui.csv.CsvImportScreen
+import edu.fnosari.classmanager.ui.home.HomeScreen
 import edu.fnosari.classmanager.ui.groups.GroupsScreen
 import edu.fnosari.classmanager.ui.picker.PickerScreen
 import edu.fnosari.classmanager.ui.rooms.RoomEditorScreen
@@ -49,12 +49,13 @@ object Routes {
 fun AppNavHost(nav: NavHostController, startStudentId: Long?) {
     NavHost(navController = nav, startDestination = Routes.CLASS_LIST) {
         composable(Routes.CLASS_LIST) {
-            ClassListScreen(
+            HomeScreen(
                 onOpenClass = { nav.navigate(Routes.classDetail(it)) },
                 onImportCsv = { nav.navigate(Routes.CSV_IMPORT) },
                 onSettings = { nav.navigate(Routes.SETTINGS) },
                 onOpenSeating = { nav.navigate(Routes.seating(it)) },
                 onOpenSeatingPlans = { nav.navigate(Routes.seatingPlans(it)) },
+                onOpenStudent = { nav.navigate(Routes.student(it)) },
             )
         }
         composable(

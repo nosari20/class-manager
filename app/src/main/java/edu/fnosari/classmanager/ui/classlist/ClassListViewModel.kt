@@ -27,55 +27,11 @@ import kotlinx.coroutines.launch
 
 data class ClassRow(val schoolClass: SchoolClass, val studentCount: Int)
 
-data class CourseBanner(
-    val schoolClass: SchoolClass,
-    val slot: TimetableSlot,
-    val roomName: String?,
-    val isCurrent: Boolean,
-    val startAt: LocalDateTime?,   // set for upcoming course
-)
-
 @OptIn(ExperimentalCoroutinesApi::class)
 class ClassListViewModel(
     private val db: AppDatabase,
     private val settings: SettingsRepository,
 ) : ViewModel() {
-    private val minuteTicker = flow {
-        while (true) {
-            emit(Unit)
-            delay(60_000)
-        }
-    }
-
-    val banner: StateFlow<CourseBanner?> = combine(
-        db.classDao().all(),
-        db.timetableDao().allSlots(),
-        db.seatingDao().rooms(),
-        settings.weekARef,
-        minuteTicker,
-    ) { classes, slots, rooms, weekARefStr, _ ->
-        val byClass = classes.associateBy { it.id }
-        val roomNames = rooms.associate { it.id to it.name }
-        val ref = weekARefStr?.let(LocalDate::parse)
-        val now = LocalDateTime.now()
-        val current = currentSlot(now, slots, ref)
-        if (current != null) {
-            byClass[current.classId]?.let { c ->
-                CourseBanner(c, current, current.roomId?.let { roomNames[it] }, true, null)
-            }
-        } else {
-            nextSlotWithTime(now, slots, ref)?.let { (slot, start) ->
-                byClass[slot.classId]?.let { c ->
-                    CourseBanner(c, slot, slot.roomId?.let { roomNames[it] }, false, start)
-                }
-            }
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
-
-    /** Latest seating plan for the banner's class+room, if any. */
-    suspend fun resolvePlan(b: CourseBanner): Long? =
-        b.slot.roomId?.let { db.seatingDao().latestPlanFor(b.schoolClass.id, it)?.id }
-
     val classes: StateFlow<List<ClassRow>> = db.classDao().all()
         .flatMapLatest { list ->
             if (list.isEmpty()) flowOf(emptyList())

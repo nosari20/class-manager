@@ -134,6 +134,36 @@ data class GroupingGroup(
     @ColumnInfo(name = "groupIndex") val index: Int,
 )
 
+@Entity(
+    tableName = "slot_cancellation",
+    foreignKeys = [ForeignKey(entity = TimetableSlot::class, parentColumns = ["id"],
+        childColumns = ["slotId"], onDelete = ForeignKey.CASCADE)],
+    indices = [Index("slotId")],
+)
+data class SlotCancellation(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val slotId: Long,
+    val date: String,            // "yyyy-MM-dd" occurrence suppressed on this date
+)
+
+@Entity(
+    tableName = "one_off_slot",
+    foreignKeys = [
+        ForeignKey(entity = SchoolClass::class, parentColumns = ["id"],
+            childColumns = ["classId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = Room::class, parentColumns = ["id"],
+            childColumns = ["roomId"], onDelete = ForeignKey.SET_NULL)],
+    indices = [Index("classId"), Index("roomId")],
+)
+data class OneOffSlot(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val classId: Long,
+    val date: String,            // "yyyy-MM-dd"
+    val startTime: String,       // "HH:mm"
+    val endTime: String,
+    val roomId: Long? = null,
+)
+
 @Entity(tableName = "room")
 data class Room(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

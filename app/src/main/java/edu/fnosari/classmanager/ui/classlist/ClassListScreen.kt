@@ -62,14 +62,10 @@ fun ClassListScreen(
     onOpenClass: (Long) -> Unit,
     onImportCsv: () -> Unit,
     onSettings: () -> Unit,
-    onOpenSeating: (Long) -> Unit,
-    onOpenSeatingPlans: (Long) -> Unit,
 ) {
     val vm: ClassListViewModel =
         viewModel(factory = ClassListViewModel.factory(LocalContext.current.appContainer))
     val classes by vm.classes.collectAsStateWithLifecycle()
-    val banner by vm.banner.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
     var editing by remember { mutableStateOf<SchoolClass?>(null) }
     var showCreate by remember { mutableStateOf(false) }
     var deleting by remember { mutableStateOf<SchoolClass?>(null) }
@@ -109,62 +105,6 @@ fun ClassListScreen(
             Modifier.padding(padding).fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
         ) {
-            banner?.let { b ->
-                item(key = "banner") {
-                    Card(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 12.dp)
-                            .combinedClickable(onClick = {
-                                scope.launch {
-                                    val planId = vm.resolvePlan(b)
-                                    if (planId != null) onOpenSeating(planId)
-                                    else onOpenSeatingPlans(b.schoolClass.id)
-                                }
-                            }),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (b.isCurrent) MaterialTheme.colorScheme.primaryContainer
-                            else MaterialTheme.colorScheme.surface,
-                        ),
-                    ) {
-                        val accent = classColor(b.schoolClass.id)
-                        Column(
-                            Modifier
-                                .fillMaxWidth()
-                                .stripeEdge(accent)
-                                .padding(start = 28.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
-                        ) {
-                            SectionLabel(
-                                stringResource(
-                                    if (b.isCurrent) R.string.current_course else R.string.next_course
-                                ),
-                            )
-                            Text(
-                                b.schoolClass.name,
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(top = 4.dp),
-                            )
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(top = 8.dp),
-                            ) {
-                                b.roomName?.let {
-                                    AccentPill(it, accent, Modifier.padding(end = 8.dp))
-                                }
-                                val whenPart = if (b.isCurrent) {
-                                    "${b.slot.startTime}–${b.slot.endTime}"
-                                } else {
-                                    b.startAt?.let {
-                                        "${dayName(b.slot.dayOfWeek)} ${b.slot.startTime}"
-                                    } ?: ""
-                                }
-                                Text(whenPart, style = MaterialTheme.typography.bodyMedium)
-                            }
-                        }
-                    }
-                }
-            }
             items(classes, key = { it.schoolClass.id }) { row ->
                 Card(
                     Modifier
