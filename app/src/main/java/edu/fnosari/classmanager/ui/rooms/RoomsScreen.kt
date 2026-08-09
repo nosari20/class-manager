@@ -155,6 +155,24 @@ private fun RoomNameDialog(initial: String?, onDismiss: () -> Unit, onSave: (Str
     )
 }
 
+/** Lays out one slot per seat — horizontally, or vertically for rotated tables. */
+@Composable
+fun SeatSlots(
+    desk: Desk,
+    modifier: Modifier = Modifier,
+    slot: @Composable (Int) -> Unit,
+) {
+    if (desk.vertical) {
+        Column(modifier) {
+            repeat(desk.seats) { i -> Box(Modifier.weight(1f).fillMaxSize()) { slot(i) } }
+        }
+    } else {
+        Row(modifier) {
+            repeat(desk.seats) { i -> Box(Modifier.weight(1f).fillMaxSize()) { slot(i) } }
+        }
+    }
+}
+
 /** Shared canvas: renders board + desks; used by editor and seating screens. */
 @Composable
 fun RoomCanvas(
@@ -203,16 +221,17 @@ fun RoomCanvas(
             modifier = Modifier.align(Alignment.TopCenter).padding(top = 18.dp),
         )
         desks.forEach { d ->
-            val deskWidthPx = deskPx * d.seats
+            val wUnits = if (d.vertical) 1 else d.seats
+            val hUnits = if (d.vertical) d.seats else 1
             Box(
                 Modifier
                     .offset {
                         IntOffset(
-                            (d.x * canvasW - deskWidthPx / 2).roundToInt(),
-                            (d.y * canvasH - deskPx / 2).roundToInt(),
+                            (d.x * canvasW - deskPx * wUnits / 2).roundToInt(),
+                            (d.y * canvasH - deskPx * hUnits / 2).roundToInt(),
                         )
                     }
-                    .size(width = DESK_SIZE * d.seats, height = DESK_SIZE)
+                    .size(width = DESK_SIZE * wUnits, height = DESK_SIZE * hUnits)
                     .then(deskModifier(d, canvasW, canvasH)),
             ) {
                 deskContent(d)
@@ -290,29 +309,27 @@ fun RoomEditorScreen(roomId: Long, onBack: () -> Unit) {
                         }
                 },
                 deskContent = { d ->
-                    Row(
+                    SeatSlots(
+                        d,
                         Modifier
                             .fillMaxSize()
                             .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(8.dp)),
-                    ) {
-                        repeat(d.seats) { i ->
-                            Box(
-                                Modifier
-                                    .weight(1f)
-                                    .fillMaxSize()
-                                    .then(
-                                        if (i > 0) Modifier.border(
-                                            0.5.dp, MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.3f)
-                                        ) else Modifier
-                                    ),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                if (i == 0) {
-                                    Text(
-                                        "${desks.indexOfFirst { it.id == d.id } + 1}",
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    )
-                                }
+                    ) { i ->
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .then(
+                                    if (i > 0) Modifier.border(
+                                        0.5.dp, MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.3f)
+                                    ) else Modifier
+                                ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            if (i == 0) {
+                                Text(
+                                    "${desks.indexOfFirst { it.id == d.id } + 1}",
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                )
                             }
                         }
                     }
@@ -334,6 +351,11 @@ fun RoomEditorScreen(roomId: Long, onBack: () -> Unit) {
                         Text(stringResource(
                             if (d.seats == 1) R.string.make_two_seats else R.string.make_one_seat
                         ))
+                    }
+                    if (d.seats > 1) {
+                        TextButton(onClick = { vm.rotate(d); deskMenu = null }) {
+                            Text(stringResource(R.string.rotate_desk))
+                        }
                     }
                     TextButton(onClick = { vm.deleteDesk(d); deskMenu = null }) {
                         Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)

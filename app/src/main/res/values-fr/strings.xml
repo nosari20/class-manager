@@ -107,4 +107,5 @@
     <string name="desk_options">Table</string>
     <string name="make_two_seats">Passer en table de 2</string>
     <string name="make_one_seat">Passer en table de 1</string>
+    <string name="rotate_desk">Pivoter</string>
 </resources>

@@ -43,6 +43,10 @@ class RoomEditorViewModel(container: AppContainer, val roomId: Long) : ViewModel
         dao.updateDesk(d.copy(seats = seats))
     }
 
+    fun rotate(d: Desk) = viewModelScope.launch {
+        dao.updateDesk(d.copy(vertical = !d.vertical))
+    }
+
     fun moveDesk(d: Desk, x: Float, y: Float) = viewModelScope.launch {
         dao.updateDesk(d.copy(x = x.coerceIn(0f, 1f), y = y.coerceIn(0f, 1f)))
     }

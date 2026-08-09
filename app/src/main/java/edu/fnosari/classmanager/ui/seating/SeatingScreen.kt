@@ -57,6 +57,7 @@ import edu.fnosari.classmanager.data.Room
 import edu.fnosari.classmanager.data.SeatingPlan
 import edu.fnosari.classmanager.data.Student
 import edu.fnosari.classmanager.ui.rooms.RoomCanvas
+import edu.fnosari.classmanager.ui.rooms.SeatSlots
 import java.text.DateFormat
 import java.util.Date
 import kotlinx.coroutines.launch
@@ -266,35 +267,30 @@ fun SeatingScreen(planId: Long, onBack: () -> Unit) {
                     )
                 },
                 deskContent = { d ->
-                    Row(Modifier.fillMaxSize()) {
-                        repeat(d.seats) { seatIndex ->
-                            val student = state.seats[d.id]?.get(seatIndex)
-                            androidx.compose.foundation.layout.Box(
-                                Modifier
-                                    .weight(1f)
-                                    .fillMaxSize()
-                                    .background(
-                                        if (student != null) MaterialTheme.colorScheme.primaryContainer
-                                        else MaterialTheme.colorScheme.surface,
-                                        if (d.seats == 1) RoundedCornerShape(8.dp)
-                                        else if (seatIndex == 0) RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp)
-                                        else RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp),
-                                    )
-                                    .clickable {
-                                        if (student != null) occupiedTap = d.id to seatIndex
-                                        else pickingFor = d.id to seatIndex
-                                    },
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Text(
-                                    student?.let {
-                                        "${it.firstName}\n${it.lastName.take(1)}."
-                                    } ?: "",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    textAlign = TextAlign.Center,
-                                    maxLines = 2,
+                    SeatSlots(d, Modifier.fillMaxSize()) { seatIndex ->
+                        val student = state.seats[d.id]?.get(seatIndex)
+                        androidx.compose.foundation.layout.Box(
+                            Modifier
+                                .fillMaxSize()
+                                .background(
+                                    if (student != null) MaterialTheme.colorScheme.primaryContainer
+                                    else MaterialTheme.colorScheme.surface,
+                                    RoundedCornerShape(6.dp),
                                 )
-                            }
+                                .clickable {
+                                    if (student != null) occupiedTap = d.id to seatIndex
+                                    else pickingFor = d.id to seatIndex
+                                },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                student?.let {
+                                    "${it.firstName}\n${it.lastName.take(1)}."
+                                } ?: "",
+                                style = MaterialTheme.typography.labelSmall,
+                                textAlign = TextAlign.Center,
+                                maxLines = 2,
+                            )
                         }
                     }
                 },
