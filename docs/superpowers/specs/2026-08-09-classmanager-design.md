@@ -33,6 +33,10 @@ Offline-only. No server, no account. French + English UI (French default via sys
 | Note | id, studentId, text, createdAt |
 | CustomField | id, studentId, key, value |
 | Reminder | id, studentId, text, type (NEXT_LESSON / MORNING_DIGEST / FIXED_DATETIME), dueAt, done, createdAt |
+| SeparationConstraint | id, classId, studentAId, studentBId |
+| Grouping | id, classId, name, createdAt |
+| GroupingGroup | id, groupingId, index |
+| GroupingMember | groupId, studentId |
 | AppSettings (DataStore, not Room) | weekAReferenceDate, digestTime (default 07:00), lastCsvMapping |
 
 Cascade deletes: class → students → notes/fields/reminders. Deleting entities cancels their alarms.
@@ -88,6 +92,14 @@ Mechanics:
 - Notification tap deep-links to StudentDetailScreen; "Done" action button on notification.
 - Notification channels: "Reminders" and "Daily digest".
 
+### Group generator with constraints
+
+- Per class. Persistent **separation constraints**: pairs of students who must never share a group ("X ✕ Y"), managed in a constraints editor (add via two-student picker, delete). Reused across all generations.
+- Split mode toggle: "groups of N" (remainder spread across groups) or "N groups" (sizes balanced). Option to exclude students absent today.
+- Algorithm: shuffle roster, greedily assign each student to the smallest group with no separation violation, backtrack on dead ends, retry with a fresh shuffle (max ~100 attempts). Class sizes ≤ 40 → effectively instant. If infeasible, report the clashing constraints instead of failing silently.
+- Result: group cards; actions: reshuffle, manual edit (move student between groups — constraint-violating moves allowed but flagged red, teacher decides), save with a name (e.g. "TP chimie 12/09").
+- Saved groupings listed per class: view, rename, delete. Regenerate = new grouping.
+
 ### Backup / restore
 
 - **Backup:** Room checkpoint (`wal_checkpoint(TRUNCATE)`) → zip `classmanager.db` + `photos/` + `manifest.json` (schema version, app version, date) → SAF create-document (`application/zip`), filename `classmanager-backup-YYYY-MM-DD.zip`. User picks Google Drive or any destination.
@@ -100,7 +112,8 @@ Mechanics:
 | Screen | Content |
 |---|---|
 | ClassListScreen | Class cards; FAB menu: new class / import CSV; overflow: settings |
-| ClassDetailScreen | Student grid; sections/tabs: students, timetable; button → picker |
+| ClassDetailScreen | Student grid; sections/tabs: students, timetable; buttons → picker, groups |
+| GroupGeneratorScreen | Constraints editor, split toggle, generate/reshuffle, manual edit, save; past groupings list |
 | RandomPickerScreen | Reveal animation, pick-again, cycle progress, reset, absence toggles |
 | StudentDetailScreen | Photo, fields, notes timeline, reminders |
 | CsvImportScreen | File → mapping dropdowns → preview → class name/level → confirm |
@@ -115,7 +128,7 @@ Mechanics:
 
 ## Testing
 
-- **Unit:** CSV parser (separators, encodings, quotes, malformed rows), A/B parity + next-slot computation (incl. year boundaries), picker cycle logic, backup manifest validation.
+- **Unit:** CSV parser (separators, encodings, quotes, malformed rows), A/B parity + next-slot computation (incl. year boundaries), picker cycle logic, backup manifest validation, group generation (constraints respected, balanced sizes, infeasible detection).
 - **Instrumented:** Room DAO tests, migration tests (once v2 exists).
 - **Manual:** notification timing, boot reschedule, SAF flows, Drive round-trip.
 
