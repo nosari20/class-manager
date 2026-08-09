@@ -148,9 +148,10 @@ Android's per-app language settings.
 
 Release engineering, before any public build:
 
-- [ ] Decide the final `applicationId` — it is permanent once published and currently reads
-  `edu.fnosari.classmanager`, which does not match the app's name.
 - [ ] Add a release signing config and re-enable optimisation for release builds.
+
+The `applicationId` is settled: `edu.fnosari.classmanager`, kept as is. It is invisible to
+users, and changing it after publication would create a separate app with no upgrade path.
 
 ## Contributing
 

@@ -100,9 +100,11 @@ Sous Windows, utilisez `gradlew.bat`. Si plusieurs appareils sont connectés, d�
 
 Avant toute publication :
 
-- [ ] Fixer l'`applicationId` définitif — définitif une fois publié, aujourd'hui
-  `edu.fnosari.classmanager`.
 - [ ] Ajouter une configuration de signature de release.
+
+L'`applicationId` est arrêté : `edu.fnosari.classmanager`, conservé tel quel. Il n'est jamais
+visible par les utilisateurs, et le changer après publication créerait une application
+distincte, sans mise à jour possible depuis l'ancienne.
 
 ## Contribuer
 

@@ -14,15 +14,14 @@ docs/playstore/
     └── en-US/  same, English
 ```
 
-## Before you upload: three decisions
+## Before you upload
 
-**1. The application ID is permanent.** It is currently `edu.fnosari.classmanager`, which
-does not match the app's name and cannot be changed after the first release — a different ID
-means a different listing, with no upgrade path for anyone who installed the old one. If you
-want `fr.nosari.maclasse`, change it in `app/build.gradle.kts` (`applicationId`) **now**. The
-Kotlin package can stay as it is; only the `applicationId` matters to Play.
+**Application ID — decided, do not change.** The app ships as `edu.fnosari.classmanager`.
+It does not match the app's name, and that is fine: the ID is never shown to users, only the
+store listing title is. It is now permanent — after the first release a different ID would be
+a different app on Play, with no upgrade path for anyone who installed this one.
 
-**2. There is no release signing config yet.** `./gradlew bundleRelease` will not produce an
+**1. There is no release signing config yet.** `./gradlew bundleRelease` will not produce an
 uploadable artifact until you add one. Create a keystore, keep it somewhere you will still
 have in five years, and never commit it:
 
@@ -35,7 +34,7 @@ Reference it from `app/build.gradle.kts` through a `keystore.properties` file th
 of git. Losing this key means you can never update the app again — enrol in Play App Signing
 so Google keeps a recoverable copy.
 
-**3. Release builds currently skip optimisation** (`optimization { enable = false }` in
+**2. Release builds currently skip optimisation** (`optimization { enable = false }` in
 `app/build.gradle.kts`). Turn it on for release and test the resulting build, since R8 can
 break reflection-based code — Room and Compose are fine, but verify a restore and a
 notification on the release build before shipping.
