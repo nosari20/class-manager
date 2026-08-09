@@ -100,7 +100,12 @@ Sous Windows, utilisez `gradlew.bat`. Si plusieurs appareils sont connectés, d�
 
 Avant toute publication :
 
-- [ ] Ajouter une configuration de signature de release.
+- [ ] Réactiver l'optimisation des builds de release, puis vérifier une restauration et une
+  notification sur le bundle signé.
+- [ ] Incrémenter le `versionCode` à chaque envoi.
+
+Les bundles sont signés depuis Android Studio (*Generate Signed App Bundle*) : aucun
+`signingConfig` dans les fichiers Gradle, aucun keystore près du dépôt.
 
 L'`applicationId` est arrêté : `edu.fnosari.classmanager`, conservé tel quel. Il n'est jamais
 visible par les utilisateurs, et le changer après publication créerait une application

@@ -148,7 +148,12 @@ Android's per-app language settings.
 
 Release engineering, before any public build:
 
-- [ ] Add a release signing config and re-enable optimisation for release builds.
+- [ ] Re-enable optimisation for release builds and verify a restore and a notification on the
+  signed bundle.
+- [ ] Bump `versionCode` for every upload.
+
+Release bundles are signed from Android Studio (*Generate Signed App Bundle*), so there is no
+`signingConfig` in the Gradle files and no keystore anywhere near the repository.
 
 The `applicationId` is settled: `edu.fnosari.classmanager`, kept as is. It is invisible to
 users, and changing it after publication would create a separate app with no upgrade path.

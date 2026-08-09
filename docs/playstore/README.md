@@ -21,23 +21,26 @@ It does not match the app's name, and that is fine: the ID is never shown to use
 store listing title is. It is now permanent — after the first release a different ID would be
 a different app on Play, with no upgrade path for anyone who installed this one.
 
-**1. There is no release signing config yet.** `./gradlew bundleRelease` will not produce an
-uploadable artifact until you add one. Create a keystore, keep it somewhere you will still
-have in five years, and never commit it:
+**1. Signing is done in Android Studio**, not by Gradle. *Build → Generate Signed App Bundle
+or APK → Android App Bundle*, create the key the first time, pick the `release` variant. The
+bundle lands in `app/release/app-release.aab`. There is deliberately no `signingConfig` in
+`app/build.gradle.kts`, so the keystore never has to sit near the repository — and
+`*.jks`, `*.keystore` and `keystore.properties` are gitignored in case one ever does.
 
-```bash
-keytool -genkeypair -v -keystore maclasse-release.jks -keyalg RSA -keysize 4096 \
-        -validity 10000 -alias maclasse
-```
-
-Reference it from `app/build.gradle.kts` through a `keystore.properties` file that stays out
-of git. Losing this key means you can never update the app again — enrol in Play App Signing
-so Google keeps a recoverable copy.
+Two things about that key: **back it up somewhere you will still have in five years**, and
+enrol in Play App Signing when you create the app in the Play Console, so Google holds the
+distribution key and yours is only the upload key. Without either, a lost keystore means the
+app can never be updated again.
 
 **2. Release builds currently skip optimisation** (`optimization { enable = false }` in
-`app/build.gradle.kts`). Turn it on for release and test the resulting build, since R8 can
-break reflection-based code — Room and Compose are fine, but verify a restore and a
-notification on the release build before shipping.
+`app/build.gradle.kts`). Turn it on for release and test the bundle you are about to upload,
+since R8 can break reflection-based code — Room and Compose are fine here, but verify a
+backup restore and a reminder notification on the signed build before shipping.
+
+**3. `versionCode` must increase with every upload** (`app/build.gradle.kts`, currently `1`).
+Play rejects a bundle whose code it has already seen, and Android Studio does not bump it for
+you. Bump `versionName` too when the change is worth naming, and add the release to
+`CHANGELOG.md`.
 
 ## Store listing fields
 
