@@ -65,6 +65,7 @@ import edu.fnosari.classmanager.ui.common.pronoteTopBarColors
 import edu.fnosari.classmanager.appContainer
 import edu.fnosari.classmanager.data.Student
 import edu.fnosari.classmanager.ui.common.PhotoUtil
+import edu.fnosari.classmanager.ui.seating.SeatingPlanBody
 import edu.fnosari.classmanager.ui.timetable.TimetableEditor
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -76,6 +77,8 @@ fun ClassDetailScreen(
     onGroups: () -> Unit,
     onSeating: () -> Unit,
     onBack: () -> Unit,
+    /** Room to show in the seating tab; when set the screen opens on that tab. */
+    roomId: Long? = null,
 ) {
     val context = LocalContext.current
     val vm: ClassDetailViewModel =
@@ -83,7 +86,7 @@ fun ClassDetailScreen(
     val schoolClass by vm.schoolClass.collectAsStateWithLifecycle()
     val students by vm.students.collectAsStateWithLifecycle()
     val slots by vm.slots.collectAsStateWithLifecycle()
-    var tab by remember { mutableIntStateOf(0) }
+    var tab by remember { mutableIntStateOf(if (roomId != null) TAB_SEATING else TAB_STUDENTS) }
     var showAdd by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<Student?>(null) }
 
@@ -111,7 +114,7 @@ fun ClassDetailScreen(
             )
         },
         floatingActionButton = {
-            if (tab == 0) {
+            if (tab == TAB_STUDENTS) {
                 FloatingActionButton(onClick = { showAdd = true }) {
                     Icon(Icons.Default.PersonAdd, stringResource(R.string.add_student))
                 }
@@ -120,12 +123,14 @@ fun ClassDetailScreen(
     ) { padding ->
         Column(Modifier.padding(padding).fillMaxSize()) {
             TabRow(selectedTabIndex = tab) {
-                Tab(selected = tab == 0, onClick = { tab = 0 },
+                Tab(selected = tab == TAB_STUDENTS, onClick = { tab = TAB_STUDENTS },
                     text = { Text(stringResource(R.string.students)) })
-                Tab(selected = tab == 1, onClick = { tab = 1 },
+                Tab(selected = tab == TAB_TIMETABLE, onClick = { tab = TAB_TIMETABLE },
                     text = { Text(stringResource(R.string.timetable)) })
+                Tab(selected = tab == TAB_SEATING, onClick = { tab = TAB_SEATING },
+                    text = { Text(stringResource(R.string.seating_plan)) })
             }
-            if (tab == 0) {
+            if (tab == TAB_STUDENTS) {
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(96.dp),
                     contentPadding = PaddingValues(16.dp),
@@ -151,6 +156,8 @@ fun ClassDetailScreen(
                         }
                     }
                 }
+            } else if (tab == TAB_SEATING) {
+                SeatingTab(vm, roomId, onSeating)
             } else {
                 val rooms by vm.rooms.collectAsStateWithLifecycle()
                 val cancellations by vm.cancellations.collectAsStateWithLifecycle()
@@ -178,6 +185,43 @@ fun ClassDetailScreen(
         StudentDialog(s, onDismiss = { editing = null },
             onSave = { l, f, uri -> vm.updateStudent(s, l, f, uri, context); editing = null },
             onDelete = { vm.deleteStudent(s); editing = null })
+    }
+}
+
+private const val TAB_STUDENTS = 0
+private const val TAB_TIMETABLE = 1
+private const val TAB_SEATING = 2
+
+/**
+ * Seating for [preferredRoomId] when the screen was opened from a course, otherwise for the room
+ * of the class's current (or next) course. Falls back to prompting for a plan.
+ */
+@Composable
+private fun SeatingTab(vm: ClassDetailViewModel, preferredRoomId: Long?, onSeating: () -> Unit) {
+    val roomIdNow by vm.roomIdNow.collectAsStateWithLifecycle()
+    val plans by vm.plans.collectAsStateWithLifecycle()
+    val rooms by vm.rooms.collectAsStateWithLifecycle()
+    val room = preferredRoomId ?: roomIdNow
+    val plan = room?.let { r -> plans.firstOrNull { it.roomId == r } }
+
+    when {
+        plan != null -> SeatingPlanBody(plan.id)
+        else -> Column(
+            Modifier.fillMaxSize().padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                stringResource(
+                    if (room == null) R.string.no_room_scheduled else R.string.no_plan_for_room,
+                    room?.let { r -> rooms.firstOrNull { it.id == r }?.name } ?: "",
+                ),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            TextButton(onClick = onSeating, Modifier.padding(top = 8.dp)) {
+                Text(stringResource(R.string.seating_plans))
+            }
+        }
     }
 }
 

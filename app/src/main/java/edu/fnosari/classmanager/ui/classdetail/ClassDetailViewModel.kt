@@ -13,11 +13,16 @@ import edu.fnosari.classmanager.data.SlotCancellation
 import edu.fnosari.classmanager.data.Student
 import edu.fnosari.classmanager.data.TimetableSlot
 import edu.fnosari.classmanager.data.WeekParityTag
+import edu.fnosari.classmanager.domain.currentOccurrence
+import edu.fnosari.classmanager.domain.nextOccurrence
 import edu.fnosari.classmanager.ui.common.PhotoUtil
 import java.io.File
+import java.time.LocalDate
+import java.time.LocalDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -76,6 +81,18 @@ class ClassDetailViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val weekARef = container.settings.weekARef
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    val plans = db.seatingDao().plansFor(classId)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    /** Room of the course running now, else the next one — what "the current room" means for this class. */
+    val roomIdNow: StateFlow<Long?> = combine(
+        slots, cancellations, oneOffs, weekARef,
+    ) { s, c, o, ref ->
+        val now = LocalDateTime.now()
+        val parsed = ref?.let(LocalDate::parse)
+        (currentOccurrence(now, s, c, o, parsed) ?: nextOccurrence(now, s, c, o, parsed))?.roomId
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     fun cancelOccurrence(slotId: Long, date: String) = viewModelScope.launch {
         db.timetableDao().insertCancellation(SlotCancellation(slotId = slotId, date = date))

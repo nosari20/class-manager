@@ -27,7 +27,7 @@ import edu.fnosari.classmanager.ui.timetable.GlobalTimetableScreen
 
 object Routes {
     const val CLASS_LIST = "classes"
-    const val CLASS_DETAIL = "class/{classId}"
+    const val CLASS_DETAIL = "class/{classId}?roomId={roomId}"
     const val STUDENT = "student/{studentId}"
     const val PICKER = "picker/{classId}"
     const val GROUPS = "groups/{classId}"
@@ -38,7 +38,8 @@ object Routes {
     const val ROOM_EDITOR = "room/{roomId}"
     const val SEATING_PLANS = "seatingPlans/{classId}"
     const val SEATING = "seating/{planId}"
-    fun classDetail(id: Long) = "class/$id"
+    fun classDetail(id: Long, roomId: Long? = null) =
+        "class/$id" + (roomId?.let { "?roomId=$it" } ?: "")
     fun student(id: Long) = "student/$id"
     fun picker(classId: Long) = "picker/$classId"
     fun groups(classId: Long) = "groups/$classId"
@@ -55,8 +56,9 @@ fun AppNavHost(nav: NavHostController, startStudentId: Long?) {
                 onOpenClass = { nav.navigate(Routes.classDetail(it)) },
                 onImportCsv = { nav.navigate(Routes.CSV_IMPORT) },
                 onSettings = { nav.navigate(Routes.SETTINGS) },
-                onOpenSeating = { nav.navigate(Routes.seating(it)) },
-                onOpenSeatingPlans = { nav.navigate(Routes.seatingPlans(it)) },
+                onOpenCourse = { classId, roomId ->
+                    nav.navigate(Routes.classDetail(classId, roomId))
+                },
                 onOpenStudent = { nav.navigate(Routes.student(it)) },
                 onOpenTimetable = { nav.navigate(Routes.GLOBAL_TIMETABLE) },
             )
@@ -69,7 +71,10 @@ fun AppNavHost(nav: NavHostController, startStudentId: Long?) {
         }
         composable(
             Routes.CLASS_DETAIL,
-            arguments = listOf(navArgument("classId") { type = NavType.LongType }),
+            arguments = listOf(
+                navArgument("classId") { type = NavType.LongType },
+                navArgument("roomId") { type = NavType.LongType; defaultValue = -1L },
+            ),
         ) {
             val classId = it.arguments!!.getLong("classId")
             ClassDetailScreen(
@@ -79,6 +84,7 @@ fun AppNavHost(nav: NavHostController, startStudentId: Long?) {
                 onGroups = { nav.navigate(Routes.groups(classId)) },
                 onSeating = { nav.navigate(Routes.seatingPlans(classId)) },
                 onBack = { nav.popBackStack() },
+                roomId = it.arguments!!.getLong("roomId").takeIf { id -> id > 0 },
             )
         }
         composable(
