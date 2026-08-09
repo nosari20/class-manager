@@ -1,5 +1,8 @@
 package edu.fnosari.classmanager.ui.home
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.School
@@ -48,7 +51,10 @@ fun HomeScreen(
             }
         },
     ) { padding ->
-        androidx.compose.foundation.layout.Box(Modifier.padding(padding)) {
+        // Only the bottom bar is ours; the tab screens carry their own top bar and must keep
+        // drawing under the status bar. Consuming the inset stops them re-applying it.
+        val bottom = PaddingValues(bottom = padding.calculateBottomPadding())
+        Box(Modifier.padding(bottom).consumeWindowInsets(bottom)) {
             if (tab == 0) {
                 TodayScreen(
                     onOpenCourse = onOpenCourse,
