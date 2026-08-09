@@ -128,4 +128,9 @@
     <string name="calendar_sync_failed">Calendar sync failed</string>
     <string name="ok">OK</string>
     <string name="parity_both">All weeks</string>
+    <string name="backup_help">Save all data to a file (Drive, SD…)</string>
+    <string name="backup_password">Password (optional)</string>
+    <string name="backup_password_help">Set a password to encrypt the backup and protect student data. Leave empty for a plain file. Without the password, an encrypted backup cannot be restored.</string>
+    <string name="restore_password_help">This backup is encrypted. Enter its password.</string>
+    <string name="bad_password">Wrong password — try again.</string>
 </resources>

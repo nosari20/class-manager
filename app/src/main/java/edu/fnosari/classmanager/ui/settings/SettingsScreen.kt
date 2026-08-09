@@ -17,6 +17,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -32,6 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.fnosari.classmanager.R
@@ -53,6 +57,7 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
 
     var showTimePicker by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
+    var showBackupDialog by remember { mutableStateOf(false) }
 
     val backupLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/zip")
@@ -102,9 +107,8 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
             HorizontalDivider()
             ListItem(
                 headlineContent = { Text(stringResource(R.string.backup)) },
-                modifier = Modifier.clickable {
-                    backupLauncher.launch("classmanager-backup-${LocalDate.now()}.zip")
-                },
+                supportingContent = { Text(stringResource(R.string.backup_help)) },
+                modifier = Modifier.clickable { showBackupDialog = true },
             )
             HorizontalDivider()
             ListItem(
@@ -127,6 +131,77 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
                 },
             )
         }
+    }
+
+    if (showBackupDialog) {
+        var password by remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = { showBackupDialog = false },
+            title = { Text(stringResource(R.string.backup)) },
+            text = {
+                Column {
+                    Text(stringResource(R.string.backup_password_help))
+                    OutlinedTextField(
+                        password, { password = it },
+                        label = { Text(stringResource(R.string.backup_password)) },
+                        visualTransformation = PasswordVisualTransformation(),
+                        singleLine = true,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    vm.backupPassword = password.ifBlank { null }
+                    val ext = if (password.isBlank()) "zip" else "cmbackup"
+                    showBackupDialog = false
+                    backupLauncher.launch("classmanager-backup-${LocalDate.now()}.$ext")
+                }) { Text(stringResource(R.string.backup)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showBackupDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+        )
+    }
+
+    if (vm.restoreState == "password" || vm.restoreState == "bad_password") {
+        var password by remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = { vm.dismissDialog() },
+            title = { Text(stringResource(R.string.restore)) },
+            text = {
+                Column {
+                    Text(
+                        stringResource(
+                            if (vm.restoreState == "bad_password") R.string.bad_password
+                            else R.string.restore_password_help
+                        ),
+                        color = if (vm.restoreState == "bad_password") MaterialTheme.colorScheme.error
+                        else MaterialTheme.colorScheme.onSurface,
+                    )
+                    OutlinedTextField(
+                        password, { password = it },
+                        label = { Text(stringResource(R.string.backup_password)) },
+                        visualTransformation = PasswordVisualTransformation(),
+                        singleLine = true,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = password.isNotEmpty(),
+                    onClick = { vm.submitRestorePassword(password) },
+                ) { Text(stringResource(R.string.restore)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { vm.dismissDialog() }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+        )
     }
 
     vm.calendarSyncResult?.let { result ->
@@ -190,7 +265,7 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
     }
 
     when (vm.restoreState) {
-        null -> {}
+        null, "password", "bad_password" -> {}
         "confirm" -> AlertDialog(
             onDismissRequest = { vm.dismissDialog() },
             text = { Text(stringResource(R.string.restore_warning)) },

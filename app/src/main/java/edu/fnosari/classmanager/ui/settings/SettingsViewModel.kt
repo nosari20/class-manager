@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import edu.fnosari.classmanager.AppContainer
 import edu.fnosari.classmanager.backup.BackupCheck
+import edu.fnosari.classmanager.backup.BackupCrypto
 import edu.fnosari.classmanager.backup.BackupManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
@@ -47,27 +48,53 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
         container.settings.setWeekARef(monday)
     }
 
+    // password chosen in the backup dialog, used when the file picker returns
+    var backupPassword: String? = null
+
     fun backupTo(context: Context, uri: Uri) = viewModelScope.launch(Dispatchers.IO) {
         try {
-            context.contentResolver.openOutputStream(uri)!!.use { container.backup.writeBackup(it) }
+            context.contentResolver.openOutputStream(uri)!!.use {
+                container.backup.writeBackup(it, backupPassword)
+            }
             restoreState = "backup_done"
         } catch (e: Exception) {
             restoreState = "backup_failed"
+        } finally {
+            backupPassword = null
         }
     }
 
     fun startRestore(context: Context, uri: Uri) = viewModelScope.launch(Dispatchers.IO) {
         try {
             val bytes = context.contentResolver.openInputStream(uri)!!.use { it.readBytes() }
-            when (val check = BackupManager.validate(bytes)) {
-                is BackupCheck.Ok -> {
-                    pendingRestore = bytes
-                    restoreState = "confirm"
-                }
-                is BackupCheck.Invalid -> restoreState = check.reason
+            if (BackupCrypto.isEncrypted(bytes)) {
+                pendingRestore = bytes
+                restoreState = "password"
+            } else {
+                checkAndConfirm(bytes)
             }
         } catch (e: Exception) {
             restoreState = "not_a_zip"
+        }
+    }
+
+    fun submitRestorePassword(password: String) = viewModelScope.launch(Dispatchers.IO) {
+        val encrypted = pendingRestore ?: return@launch
+        val plain = BackupCrypto.decrypt(encrypted, password)
+        if (plain == null) {
+            restoreState = "bad_password"
+        } else {
+            checkAndConfirm(plain)
+        }
+    }
+
+    private fun checkAndConfirm(zipBytes: ByteArray) {
+        when (val check = BackupManager.validate(zipBytes)) {
+            is BackupCheck.Ok -> {
+                pendingRestore = zipBytes
+                restoreState = "confirm"
+            }
+            is BackupCheck.Invalid -> restoreState = check.reason
         }
     }
 

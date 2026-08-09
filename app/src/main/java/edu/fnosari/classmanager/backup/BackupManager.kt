@@ -23,7 +23,19 @@ sealed class BackupCheck {
 
 class BackupManager(private val context: Context, private val container: AppContainer) {
 
-    suspend fun writeBackup(out: OutputStream) = withContext(Dispatchers.IO) {
+    /** Writes the backup zip; when [password] is non-blank the whole zip is AES-GCM encrypted. */
+    suspend fun writeBackup(out: OutputStream, password: String? = null) = withContext(Dispatchers.IO) {
+        if (password.isNullOrBlank()) {
+            writeZip(out)
+        } else {
+            val buffer = java.io.ByteArrayOutputStream()
+            writeZip(buffer)
+            out.write(BackupCrypto.encrypt(buffer.toByteArray(), password))
+            out.flush()
+        }
+    }
+
+    private suspend fun writeZip(out: OutputStream) = withContext(Dispatchers.IO) {
         // flush WAL into the main db file
         container.db.query("PRAGMA wal_checkpoint(TRUNCATE)", null).use { it.moveToFirst() }
         val dbFile = context.getDatabasePath(AppDatabase.DB_NAME)
