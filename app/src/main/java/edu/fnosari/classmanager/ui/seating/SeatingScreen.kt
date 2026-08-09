@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.fnosari.classmanager.R
+import edu.fnosari.classmanager.ui.common.pronoteTopBarColors
 import edu.fnosari.classmanager.appContainer
 import edu.fnosari.classmanager.data.Room
 import edu.fnosari.classmanager.data.SeatingPlan
@@ -82,6 +83,7 @@ fun SeatingPlansScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                colors = pronoteTopBarColors(),
                 title = { Text(stringResource(R.string.seating_plans)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -237,6 +239,7 @@ fun SeatingScreen(planId: Long, onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
+                colors = pronoteTopBarColors(),
                 title = { Text(state.plan?.name ?: "") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {

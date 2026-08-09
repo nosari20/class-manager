@@ -1,9 +1,11 @@
 package edu.fnosari.classmanager.ui.timetable
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -11,12 +13,15 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -28,9 +33,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import edu.fnosari.classmanager.ui.common.AccentPill
+import edu.fnosari.classmanager.ui.common.SectionLabel
+import edu.fnosari.classmanager.ui.common.stripeEdge
+import edu.fnosari.classmanager.ui.theme.classColor
 import edu.fnosari.classmanager.R
 import edu.fnosari.classmanager.data.Room
 import edu.fnosari.classmanager.data.TimetableSlot
@@ -55,24 +66,57 @@ fun TimetableEditor(
     var showAdd by remember { mutableStateOf(false) }
     val roomNames = rooms.associate { it.id to it.name }
     Column(Modifier.fillMaxSize().padding(16.dp)) {
+        SectionLabel(stringResource(R.string.timetable), Modifier.padding(bottom = 8.dp))
         LazyColumn(Modifier.weight(1f)) {
             items(slots, key = { it.id }) { s ->
-                ListItem(
-                    headlineContent = { Text("${dayName(s.dayOfWeek)} ${s.startTime}–${s.endTime}") },
-                    supportingContent = {
-                        val parts = mutableListOf<String>()
-                        s.roomId?.let { roomNames[it] }?.let { parts.add(it) }
-                        if (s.weekParity != WeekParityTag.BOTH) {
-                            parts.add(stringResource(R.string.week_parity_label, s.weekParity.name))
+                val accent = classColor(s.classId)
+                Row(
+                    Modifier.fillMaxWidth().padding(vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(Modifier.width(72.dp)) {
+                        Text(
+                            s.startTime,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            s.endTime,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Card(
+                        Modifier.weight(1f),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                        ),
+                    ) {
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .stripeEdge(accent)
+                                .padding(start = 28.dp, top = 12.dp, end = 4.dp, bottom = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    dayName(s.dayOfWeek) +
+                                        if (s.weekParity != WeekParityTag.BOTH) " · ${s.weekParity.name}" else "",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                                s.roomId?.let { roomNames[it] }?.let {
+                                    AccentPill(it, accent, Modifier.padding(top = 6.dp))
+                                }
+                            }
+                            IconButton(onClick = { onDelete(s) }) {
+                                Icon(Icons.Default.Delete, stringResource(R.string.delete),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
                         }
-                        if (parts.isNotEmpty()) Text(parts.joinToString(" — "))
-                    },
-                    trailingContent = {
-                        IconButton(onClick = { onDelete(s) }) {
-                            Icon(Icons.Default.Delete, stringResource(R.string.delete))
-                        }
-                    },
-                )
+                    }
+                }
             }
         }
         Button(onClick = { showAdd = true }, Modifier.fillMaxWidth()) {
