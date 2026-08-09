@@ -1,0 +1,38 @@
+MaClasse helps teachers run their day: class rosters, seating plans, reminders, a fair random picker and a timetable. Everything stays on your phone.
+
+NOTHING LEAVES YOUR DEVICE
+The app does not even have the Internet permission. No account, no server, no analytics, no ads. Your pupils are recorded nowhere but in your pocket.
+
+TODAY
+The day's lessons on a timeline with the current one highlighted, and the reminders due today. Tap a lesson and the class opens straight onto the seating plan for the room you are in.
+
+CLASSES AND STUDENTS
+Create classes by hand, or import a roster from a Pronote/ENT CSV export: encoding and separator are detected, you map the name columns, and you check the preview before anything is written. Optional photo per student.
+
+SEATING PLANS
+Draw the room: tap to place a desk, drag to arrange it. One- or two-seat tables that rotate for U-shaped layouts. Rooms are shared between your classes, and each class can keep several plans per room. If two students who must not sit together end up at the same table, that table turns red.
+
+TIMETABLE
+Weekly slots with A/B week parity, each tied to a room. Editable week by week: cancel a lesson, restore it, add a one-off. A global view shows every class across the week. Optional sync into your phone's calendar.
+
+RANDOM PICKER
+Draws a student without picking anyone twice until the whole class has had a turn, and leaves out today's absentees.
+
+GROUPS
+Generates balanced groups that respect your "these two must not be together" rules — and tells you honestly when they cannot all be satisfied. Groupings can be saved.
+
+STUDENT PAGES
+Notes, custom fields and reminders, delivered as notifications at a date you choose, in a morning digest, or just before your next lesson with that class.
+
+ENCRYPTED BACKUP
+The whole database, photos and settings in a single file, saved wherever you like (Drive, SD card…). Protect it with a password and the file is encrypted with AES-256. Without the password it is unreadable — including by you, so do not forget it.
+
+FRENCH OR ENGLISH, LIGHT OR DARK
+Language and theme are chosen inside the app, independently of your phone's settings.
+
+TRY IT SAFELY
+A button in the settings creates demo classes, rooms and reminders with fictional pupils, so you can try everything before entering real data.
+
+Free software under the GNU GPL v3. The code is public: https://github.com/nosari20/class-manager
+
+Not affiliated with Index Éducation. "Pronote" is their trademark, mentioned only to describe the files MaClasse can import.

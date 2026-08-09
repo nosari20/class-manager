@@ -1,0 +1,38 @@
+MaClasse aide les professeurs à gérer leur journée : listes d'élèves, plans de salle, rappels, tirage au sort et emploi du temps. Tout reste sur votre téléphone.
+
+AUCUNE DONNÉE NE SORT DE L'APPAREIL
+L'application n'a même pas la permission Internet. Pas de compte, pas de serveur, pas de statistiques, pas de publicité. Vos élèves ne sont enregistrés nulle part ailleurs que dans votre poche.
+
+AUJOURD'HUI
+Les cours du jour sur une frise, celui en cours mis en avant, et les rappels à traiter. Touchez un cours : la classe s'ouvre directement sur le plan de la salle où vous êtes.
+
+CLASSES ET ÉLÈVES
+Créez vos classes à la main, ou importez une liste depuis un export CSV Pronote ou ENT : l'encodage et le séparateur sont détectés, vous choisissez les colonnes nom et prénom, et vous vérifiez l'aperçu avant d'importer. Photo facultative pour chaque élève.
+
+PLANS DE CLASSE
+Dessinez la salle : touchez pour poser une table, faites glisser pour la placer. Tables de 1 ou 2 places, pivotables pour les dispositions en U. Les salles sont partagées entre vos classes, et chaque classe peut garder plusieurs plans par salle. Si deux élèves qui ne doivent pas être ensemble se retrouvent à la même table, la table passe en rouge.
+
+EMPLOI DU TEMPS
+Des créneaux hebdomadaires avec semaines A et B, chacun rattaché à une salle. Modifiable semaine par semaine : annulez une séance, rétablissez-la, ajoutez un cours ponctuel. Une vue globale affiche toutes vos classes sur la semaine. Synchronisation possible vers le calendrier du téléphone.
+
+TIRAGE AU SORT
+Tire un élève sans le reprendre tant que toute la classe n'est pas passée, et laisse de côté les absents du jour.
+
+GROUPES
+Génère des groupes équilibrés en respectant vos contraintes « ces deux-là, pas ensemble » — et vous prévient honnêtement quand elles ne peuvent pas toutes être satisfaites. Les répartitions peuvent être enregistrées.
+
+FICHE ÉLÈVE
+Notes, informations personnalisées et rappels, qui arrivent en notification à la date de votre choix, dans un récapitulatif du matin, ou juste avant votre prochain cours avec cette classe.
+
+SAUVEGARDE CHIFFRÉE
+Toute la base, les photos et les réglages dans un seul fichier, enregistré où vous voulez (Drive, carte SD…). Protégez-le par un mot de passe : le fichier est alors chiffré en AES-256. Sans le mot de passe, il est illisible — y compris par vous, alors ne l'oubliez pas.
+
+FRANÇAIS OU ANGLAIS, CLAIR OU SOMBRE
+La langue et le thème se choisissent dans l'application, indépendamment des réglages du téléphone.
+
+DÉCOUVRIR SANS RISQUE
+Un bouton dans les réglages crée des classes, des salles et des rappels de démonstration, avec des élèves fictifs : de quoi tout essayer avant d'entrer vos vraies données.
+
+Logiciel libre sous licence GNU GPL v3. Le code est public : https://github.com/nosari20/class-manager
+
+Application sans lien avec Index Éducation. « Pronote » est leur marque, citée uniquement pour décrire les fichiers que MaClasse sait importer.
