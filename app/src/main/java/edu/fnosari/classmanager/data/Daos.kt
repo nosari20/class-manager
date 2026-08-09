@@ -3,6 +3,7 @@ package edu.fnosari.classmanager.data
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
@@ -75,6 +76,34 @@ import kotlinx.coroutines.flow.Flow
     @Query("SELECT * FROM reminder WHERE done = 0 AND dueAt >= :dayStart AND dueAt < :dayEnd")
     suspend fun dueBetween(dayStart: Long, dayEnd: Long): List<Reminder>
     @Query("UPDATE reminder SET done = 1 WHERE id = :id") suspend fun markDone(id: Long)
+}
+
+@Dao interface SeatingDao {
+    @Insert suspend fun insertRoom(r: Room): Long
+    @Update suspend fun updateRoom(r: Room)
+    @Delete suspend fun deleteRoom(r: Room)
+    @Query("SELECT * FROM room ORDER BY name") fun rooms(): Flow<List<Room>>
+    @Query("SELECT * FROM room WHERE id = :id") suspend fun roomById(id: Long): Room?
+
+    @Insert suspend fun insertDesk(d: Desk): Long
+    @Update suspend fun updateDesk(d: Desk)
+    @Delete suspend fun deleteDesk(d: Desk)
+    @Query("SELECT * FROM desk WHERE roomId = :roomId") fun desks(roomId: Long): Flow<List<Desk>>
+
+    @Insert suspend fun insertPlan(p: SeatingPlan): Long
+    @Update suspend fun updatePlan(p: SeatingPlan)
+    @Delete suspend fun deletePlan(p: SeatingPlan)
+    @Query("SELECT * FROM seating_plan WHERE classId = :classId ORDER BY createdAt DESC")
+    fun plansFor(classId: Long): Flow<List<SeatingPlan>>
+    @Query("SELECT * FROM seating_plan WHERE id = :id") suspend fun planById(id: Long): SeatingPlan?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun assign(a: SeatAssignment)
+    @Query("DELETE FROM seat_assignment WHERE planId = :planId AND deskId = :deskId")
+    suspend fun unassign(planId: Long, deskId: Long)
+    @Query("DELETE FROM seat_assignment WHERE planId = :planId AND studentId = :studentId")
+    suspend fun unassignStudent(planId: Long, studentId: Long)
+    @Query("SELECT * FROM seat_assignment WHERE planId = :planId")
+    fun assignments(planId: Long): Flow<List<SeatAssignment>>
 }
 
 @Dao interface GroupDao {

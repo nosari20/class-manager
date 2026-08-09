@@ -1,16 +1,18 @@
 package edu.fnosari.classmanager.data
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
     entities = [SchoolClass::class, TimetableSlot::class, Student::class, Note::class,
         CustomField::class, Reminder::class, SeparationConstraint::class,
-        Grouping::class, GroupingGroup::class, GroupingMember::class],
-    version = 1,
+        Grouping::class, GroupingGroup::class, GroupingMember::class,
+        Room::class, Desk::class, SeatingPlan::class, SeatAssignment::class],
+    version = 2,
     exportSchema = true,
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun classDao(): ClassDao
@@ -20,10 +22,11 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun customFieldDao(): CustomFieldDao
     abstract fun reminderDao(): ReminderDao
     abstract fun groupDao(): GroupDao
+    abstract fun seatingDao(): SeatingDao
 
     companion object {
         const val DB_NAME = "classmanager.db"
         fun build(context: Context): AppDatabase =
-            Room.databaseBuilder(context, AppDatabase::class.java, DB_NAME).build()
+            androidx.room.Room.databaseBuilder(context, AppDatabase::class.java, DB_NAME).build()
     }
 }

@@ -88,4 +88,18 @@
     <string name="restore_newer">Sauvegarde créée avec une version plus récente de l\'application</string>
     <string name="backup_done">Sauvegarde enregistrée</string>
     <string name="backup_failed">Échec de la sauvegarde</string>
+    <string name="rooms">Salles</string>
+    <string name="new_room">Nouvelle salle</string>
+    <string name="room_name">Nom de la salle</string>
+    <string name="confirm_delete_room">Supprimer cette salle et tous ses plans de classe ?</string>
+    <string name="room_editor_help">Touchez un espace vide pour ajouter une table. Faites glisser pour déplacer. Appui long pour supprimer.</string>
+    <string name="confirm_delete_desk">Supprimer cette table ?</string>
+    <string name="board">Tableau</string>
+    <string name="seating_plans">Plans de classe</string>
+    <string name="new_plan">Nouveau plan de classe</string>
+    <string name="confirm_delete_plan">Supprimer ce plan de classe ?</string>
+    <string name="no_rooms_yet">Aucune salle — créez-en une d\'abord</string>
+    <string name="unassigned_students">Non placés (%1$d)</string>
+    <string name="pick_student">Choisir un élève</string>
+    <string name="remove_from_seat">Retirer de la place</string>
 </resources>

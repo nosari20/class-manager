@@ -88,4 +88,18 @@
     <string name="restore_newer">Backup was made with a newer app version</string>
     <string name="backup_done">Backup saved</string>
     <string name="backup_failed">Backup failed</string>
+    <string name="rooms">Rooms</string>
+    <string name="new_room">New room</string>
+    <string name="room_name">Room name</string>
+    <string name="confirm_delete_room">Delete this room and all its seating plans?</string>
+    <string name="room_editor_help">Tap empty space to add a desk. Drag to move. Long-press to delete.</string>
+    <string name="confirm_delete_desk">Delete this desk?</string>
+    <string name="board">Board</string>
+    <string name="seating_plans">Seating plans</string>
+    <string name="new_plan">New seating plan</string>
+    <string name="confirm_delete_plan">Delete this seating plan?</string>
+    <string name="no_rooms_yet">No rooms yet — create one first</string>
+    <string name="unassigned_students">Not seated (%1$d)</string>
+    <string name="pick_student">Choose student</string>
+    <string name="remove_from_seat">Remove from seat</string>
 </resources>

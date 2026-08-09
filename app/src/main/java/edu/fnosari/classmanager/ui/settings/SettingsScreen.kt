@@ -42,7 +42,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit) {
+fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Unit) {
     val context = LocalContext.current
     val vm: SettingsViewModel =
         viewModel(factory = SettingsViewModel.factory(context.appContainer))
@@ -87,6 +87,11 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit) {
                     }
                 },
                 modifier = Modifier.clickable { showDatePicker = true },
+            )
+            HorizontalDivider()
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.rooms)) },
+                modifier = Modifier.clickable { onRooms() },
             )
             HorizontalDivider()
             ListItem(
