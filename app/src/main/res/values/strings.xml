@@ -59,4 +59,11 @@
     <string name="view">View</string>
     <string name="rename">Rename</string>
     <string name="confirm_delete_grouping">Delete this grouping?</string>
+    <string name="pick_csv_file">Choose CSV file</string>
+    <string name="column_last_name">Last-name column</string>
+    <string name="column_first_name">First-name column</string>
+    <string name="skipped_lines">Skipped malformed lines: %1$s</string>
+    <string name="import_confirm">Import</string>
+    <string name="csv_error_empty">File is empty or has no data rows</string>
+    <string name="csv_error_read">Cannot read this file</string>
 </resources>

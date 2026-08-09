@@ -59,4 +59,11 @@
     <string name="view">Voir</string>
     <string name="rename">Renommer</string>
     <string name="confirm_delete_grouping">Supprimer cette répartition ?</string>
+    <string name="pick_csv_file">Choisir un fichier CSV</string>
+    <string name="column_last_name">Colonne nom</string>
+    <string name="column_first_name">Colonne prénom</string>
+    <string name="skipped_lines">Lignes ignorées : %1$s</string>
+    <string name="import_confirm">Importer</string>
+    <string name="csv_error_empty">Fichier vide ou sans données</string>
+    <string name="csv_error_read">Impossible de lire ce fichier</string>
 </resources>
