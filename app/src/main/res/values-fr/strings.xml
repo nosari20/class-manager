@@ -138,4 +138,11 @@
     <string name="demo_data_help">Ajoute des classes, élèves, salles et rappels d\'exemple pour découvrir l\'application</string>
     <string name="demo_data_confirm">Ajouter des classes, salles et rappels de démonstration ? Vos données existantes sont conservées.</string>
     <string name="demo_data_done">Données de démo créées</string>
+    <string name="language">Langue</string>
+    <string name="theme">Apparence</string>
+    <string name="system_default">Par défaut du système</string>
+    <string name="lang_fr">Français</string>
+    <string name="lang_en">English</string>
+    <string name="theme_light">Clair</string>
+    <string name="theme_dark">Sombre</string>
 </resources>

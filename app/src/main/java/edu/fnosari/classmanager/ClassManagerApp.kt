@@ -14,6 +14,7 @@ class ClassManagerApp : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
+        container.primeUiPrefs()
         NotificationHelper.createChannels(this)
         CoroutineScope(Dispatchers.IO).launch { container.alarms.scheduleDailyDigest() }
     }

@@ -56,6 +56,17 @@ private val PronoteShapes = Shapes(
     extraLarge = RoundedCornerShape(28.dp),
 )
 
+const val THEME_SYSTEM = "system"
+const val THEME_LIGHT = "light"
+const val THEME_DARK = "dark"
+
+/** Resolves the stored theme preference against the current system setting. */
+fun isDarkTheme(pref: String, systemDark: Boolean): Boolean = when (pref) {
+    THEME_DARK -> true
+    THEME_LIGHT -> false
+    else -> systemDark
+}
+
 @Composable
 fun ClassManagerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

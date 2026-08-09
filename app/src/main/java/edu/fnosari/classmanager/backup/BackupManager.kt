@@ -56,6 +56,8 @@ class BackupManager(private val context: Context, private val container: AppCont
             val settings = JSONObject()
             container.settings.weekARef.first()?.let { settings.put("weekARef", it) }
             settings.put("digestTime", container.settings.digestTime.first())
+            settings.put("language", container.settings.language.first())
+            settings.put("theme", container.settings.theme.first())
             container.settings.csvMapping.first()?.let { (l, f) ->
                 settings.put("csvLast", l)
                 settings.put("csvFirst", f)
@@ -106,6 +108,8 @@ class BackupManager(private val context: Context, private val container: AppCont
                 val json = JSONObject(settingsFile.readText())
                 if (json.has("weekARef")) container.settings.setWeekARef(json.getString("weekARef"))
                 if (json.has("digestTime")) container.settings.setDigestTime(json.getString("digestTime"))
+                if (json.has("language")) container.settings.setLanguage(json.getString("language"))
+                if (json.has("theme")) container.settings.setTheme(json.getString("theme"))
                 if (json.has("csvLast") && json.has("csvFirst")) {
                     container.settings.setCsvMapping(json.getInt("csvLast"), json.getInt("csvFirst"))
                 }

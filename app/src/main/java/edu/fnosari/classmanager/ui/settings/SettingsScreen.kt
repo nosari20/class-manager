@@ -1,12 +1,21 @@
 package edu.fnosari.classmanager.ui.settings
 
 import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.RadioButton
+import androidx.compose.ui.Alignment
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
@@ -39,12 +48,74 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import edu.fnosari.classmanager.R
+import edu.fnosari.classmanager.ui.AppLocale
 import edu.fnosari.classmanager.ui.common.pronoteTopBarColors
+import edu.fnosari.classmanager.ui.theme.THEME_DARK
+import edu.fnosari.classmanager.ui.theme.THEME_LIGHT
+import edu.fnosari.classmanager.ui.theme.THEME_SYSTEM
 import edu.fnosari.classmanager.appContainer
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
 import java.util.Locale
+
+@Composable
+private fun languageLabel(tag: String): String = when (tag) {
+    "fr" -> stringResource(R.string.lang_fr)
+    "en" -> stringResource(R.string.lang_en)
+    else -> stringResource(R.string.system_default)
+}
+
+@Composable
+private fun themeLabel(pref: String): String = when (pref) {
+    THEME_LIGHT -> stringResource(R.string.theme_light)
+    THEME_DARK -> stringResource(R.string.theme_dark)
+    else -> stringResource(R.string.system_default)
+}
+
+private fun Context.findActivity(): Activity? {
+    var c: Context = this
+    while (c is ContextWrapper) {
+        if (c is Activity) return c
+        c = c.baseContext
+    }
+    return null
+}
+
+@Composable
+private fun ChoiceDialog(
+    title: String,
+    options: List<String>,
+    selected: String,
+    label: @Composable (String) -> String,
+    onDismiss: () -> Unit,
+    onPick: (String) -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            Column {
+                options.forEach { option ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onPick(option) }
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(selected = option == selected, onClick = { onPick(option) })
+                        Text(label(option), Modifier.padding(start = 8.dp))
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
+        },
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +140,11 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
         ActivityResultContracts.RequestMultiplePermissions()
     ) { grants -> if (grants.values.all { it }) vm.syncCalendar() }
 
+    var showLanguage by remember { mutableStateOf(false) }
+    var showTheme by remember { mutableStateOf(false) }
+    val theme by vm.theme.collectAsStateWithLifecycle()
+    val language = vm.currentLanguage(context)
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -82,7 +158,19 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
             )
         },
     ) { padding ->
-        Column(Modifier.padding(padding).fillMaxSize()) {
+        Column(Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState())) {
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.language)) },
+                supportingContent = { Text(languageLabel(language)) },
+                modifier = Modifier.clickable { showLanguage = true },
+            )
+            HorizontalDivider()
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.theme)) },
+                supportingContent = { Text(themeLabel(theme)) },
+                modifier = Modifier.clickable { showTheme = true },
+            )
+            HorizontalDivider()
             ListItem(
                 headlineContent = { Text(stringResource(R.string.digest_time)) },
                 supportingContent = { Text(digestTime) },
@@ -137,6 +225,31 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
                 },
             )
         }
+    }
+
+    if (showLanguage) {
+        ChoiceDialog(
+            title = stringResource(R.string.language),
+            options = AppLocale.TAGS,
+            selected = language,
+            label = { languageLabel(it) },
+            onDismiss = { showLanguage = false },
+            onPick = { tag ->
+                showLanguage = false
+                if (vm.setLanguage(context, tag)) context.findActivity()?.recreate()
+            },
+        )
+    }
+
+    if (showTheme) {
+        ChoiceDialog(
+            title = stringResource(R.string.theme),
+            options = listOf(THEME_SYSTEM, THEME_LIGHT, THEME_DARK),
+            selected = theme,
+            label = { themeLabel(it) },
+            onDismiss = { showTheme = false },
+            onPick = { vm.setTheme(it); showTheme = false },
+        )
     }
 
     if (showBackupDialog) {
