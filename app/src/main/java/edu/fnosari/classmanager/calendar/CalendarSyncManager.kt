@@ -100,7 +100,7 @@ class CalendarSyncManager(private val context: Context, private val container: A
     }
 
     companion object {
-        const val ACCOUNT_NAME = "ClassManager"
-        const val CALENDAR_NAME = "ClassManager"
+        const val ACCOUNT_NAME = "MaClasse"
+        const val CALENDAR_NAME = "MaClasse"
     }
 }

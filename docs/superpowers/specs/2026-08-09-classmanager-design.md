@@ -1,7 +1,13 @@
-# ClassManager — Design Spec
+# MaClasse (ClassManager) — Design Spec
 
 **Date:** 2026-08-09
 **Status:** Approved by user
+
+## Branding
+
+- App name: **MaClasse** (echoes French public-edu naming: "MonLycée.net", "Ma classe à la maison"). Package id stays `edu.fnosari.classmanager`.
+- Launcher icon: adaptive vector — green #16866F background with darker diagonal-stripe corner (in-app stripe motif), white rounded "M" monogram foreground; monochrome layer for themed icons.
+- Local device calendar (sync target) is also named "MaClasse".
 
 ## Purpose
 
@@ -129,7 +135,12 @@ Mechanics:
 | RandomPickerScreen | Reveal animation, pick-again, cycle progress, reset, absence toggles |
 | StudentDetailScreen | Photo, fields, notes timeline, reminders |
 | CsvImportScreen | File → mapping dropdowns → preview → class name/level → confirm |
-| SettingsScreen | Digest time, week A reference, backup, restore, about |
+| SettingsScreen | Digest time, week A reference, rooms, backup, restore, demo data, calendar sync |
+| GlobalTimetableScreen | Read-only week view of ALL classes' occurrences (cancellations + one-offs applied), ‹ › week browser, class-colored cards with room pill; card opens the class. Entry: calendar icon in Today tab top bar |
+
+### Demo data (Settings)
+
+"Créer des données de démo" inserts, on top of existing data (never deletes): 3 classes ("6eA/5eD/4eC (démo)") × 12 students with multicultural names, 2 rooms (grid of 2-seat tables + U-shaped room with rotated side tables), a filled seating plan, timetable slots (one per class on the current day so Today shows content), a separation constraint, notes, a custom field, and 2 reminders due today. `data/DemoData.kt`.
 
 ## Error handling
 

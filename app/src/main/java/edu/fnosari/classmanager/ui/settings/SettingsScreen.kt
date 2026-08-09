@@ -119,6 +119,12 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
             )
             HorizontalDivider()
             ListItem(
+                headlineContent = { Text(stringResource(R.string.demo_data)) },
+                supportingContent = { Text(stringResource(R.string.demo_data_help)) },
+                modifier = Modifier.clickable { vm.demoState = "confirm" },
+            )
+            HorizontalDivider()
+            ListItem(
                 headlineContent = { Text(stringResource(R.string.calendar_sync)) },
                 supportingContent = { Text(stringResource(R.string.calendar_sync_help)) },
                 modifier = Modifier.clickable {
@@ -200,6 +206,30 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
                 TextButton(onClick = { vm.dismissDialog() }) {
                     Text(stringResource(R.string.cancel))
                 }
+            },
+        )
+    }
+
+    when (vm.demoState) {
+        "confirm" -> AlertDialog(
+            onDismissRequest = { vm.demoState = null },
+            text = { Text(stringResource(R.string.demo_data_confirm)) },
+            confirmButton = {
+                TextButton(onClick = { vm.createDemoData() }) {
+                    Text(stringResource(R.string.demo_data))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { vm.demoState = null }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+        )
+        "done" -> AlertDialog(
+            onDismissRequest = { vm.demoState = null },
+            text = { Text(stringResource(R.string.demo_data_done)) },
+            confirmButton = {
+                TextButton(onClick = { vm.demoState = null }) { Text(stringResource(R.string.ok)) }
             },
         )
     }

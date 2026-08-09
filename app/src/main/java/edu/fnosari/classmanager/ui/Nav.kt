@@ -23,6 +23,7 @@ import edu.fnosari.classmanager.ui.seating.SeatingPlansScreen
 import edu.fnosari.classmanager.ui.seating.SeatingScreen
 import edu.fnosari.classmanager.ui.settings.SettingsScreen
 import edu.fnosari.classmanager.ui.student.StudentDetailScreen
+import edu.fnosari.classmanager.ui.timetable.GlobalTimetableScreen
 
 object Routes {
     const val CLASS_LIST = "classes"
@@ -32,6 +33,7 @@ object Routes {
     const val GROUPS = "groups/{classId}"
     const val CSV_IMPORT = "csvImport"
     const val SETTINGS = "settings"
+    const val GLOBAL_TIMETABLE = "globalTimetable"
     const val ROOMS = "rooms"
     const val ROOM_EDITOR = "room/{roomId}"
     const val SEATING_PLANS = "seatingPlans/{classId}"
@@ -56,6 +58,13 @@ fun AppNavHost(nav: NavHostController, startStudentId: Long?) {
                 onOpenSeating = { nav.navigate(Routes.seating(it)) },
                 onOpenSeatingPlans = { nav.navigate(Routes.seatingPlans(it)) },
                 onOpenStudent = { nav.navigate(Routes.student(it)) },
+                onOpenTimetable = { nav.navigate(Routes.GLOBAL_TIMETABLE) },
+            )
+        }
+        composable(Routes.GLOBAL_TIMETABLE) {
+            GlobalTimetableScreen(
+                onBack = { nav.popBackStack() },
+                onOpenClass = { nav.navigate(Routes.classDetail(it)) },
             )
         }
         composable(
