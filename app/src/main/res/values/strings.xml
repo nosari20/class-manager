@@ -31,4 +31,11 @@
     <string name="fri">Friday</string>
     <string name="sat">Saturday</string>
     <string name="sun">Sunday</string>
+    <string name="custom_fields">Custom fields</string>
+    <string name="notes">Notes</string>
+    <string name="reminders">Reminders</string>
+    <string name="add_note">Add note</string>
+    <string name="add_field">Add field</string>
+    <string name="field_key">Label</string>
+    <string name="field_value">Value</string>
 </resources>

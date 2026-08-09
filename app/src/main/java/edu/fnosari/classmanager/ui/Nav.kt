@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import edu.fnosari.classmanager.ui.classdetail.ClassDetailScreen
 import edu.fnosari.classmanager.ui.classlist.ClassListScreen
+import edu.fnosari.classmanager.ui.student.StudentDetailScreen
 
 object Routes {
     const val CLASS_LIST = "classes"
@@ -56,7 +57,7 @@ fun AppNavHost(nav: NavHostController, startStudentId: Long?) {
             Routes.STUDENT,
             arguments = listOf(navArgument("studentId") { type = NavType.LongType }),
         ) {
-            PlaceholderScreen("Student ${it.arguments!!.getLong("studentId")}")
+            StudentDetailScreen(it.arguments!!.getLong("studentId"), onBack = { nav.popBackStack() })
         }
         composable(
             Routes.PICKER,
