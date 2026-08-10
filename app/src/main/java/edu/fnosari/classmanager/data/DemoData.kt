@@ -103,6 +103,16 @@ object DemoData {
         db.noteDao().insert(Note(studentId = roster[2], text = "Doit rattraper l'évaluation de grammaire"))
         db.customFieldDao().insert(CustomField(studentId = roster[0], key = "LV2", value = "Espagnol"))
 
+        // a checklist part-way through, so the tab is not empty on first look
+        val checklist = db.checklistDao().insert(Checklist(
+            classId = firstClass,
+            title = "Autorisation de sortie signée",
+            dueDate = today.plusDays(5).toString(),
+        ))
+        roster.take(7).forEach {
+            db.checklistDao().check(ChecklistEntry(checklistId = checklist, studentId = it))
+        }
+
         // reminders visible on the Today tab
         val fivePm = LocalDateTime.of(today, java.time.LocalTime.of(17, 0))
             .atZone(zone).toInstant().toEpochMilli()

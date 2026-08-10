@@ -138,6 +138,18 @@ Mechanics:
 | SettingsScreen | Language, appearance, digest time, week A reference, rooms, backup, restore, demo data, calendar sync |
 | GlobalTimetableScreen | Read-only week view of ALL classes' occurrences (cancellations + one-offs applied), ‹ › week browser, class-colored cards with room pill; card opens the class. Entry: calendar icon in Today tab top bar |
 
+### Checklists (class page → *Listes*)
+
+Collecting one thing from a whole class — a signed permission slip, a trip payment, a returned
+book. A checklist belongs to a class and has a title and an optional due date; a
+`checklist_entry` row means that student has handed it in, so no row is the natural "still
+missing" state and a student who leaves takes their tick with them via the foreign key.
+
+The tab lists each checklist with a progress bar and either "*n* manquants" in the error colour
+or "Au complet". Opening one shows the class with checkboxes, a running count, and *Tout
+cocher* / *Tout décocher* for the common cases (everyone paid; start a new round). Tables:
+`checklist`, `checklist_entry` — database v7, `BackupManager.SCHEMA_VERSION` 7.
+
 ### Seating tab on the class page
 
 Tapping a course in the Today tab opens the full class page on its seating tab, showing the layout of that course's room — the same screen reached from the Classes list, so students, timetable, picker and groups stay one tap away. Opened from the Classes list (no room in the route), the tab falls back to the room of the class's current course, or its next one. With no plan for that room it offers the seating-plans screen. The plan body (`SeatingPlanBody`) is shared with the standalone seating screen, so seats stay editable in the tab.

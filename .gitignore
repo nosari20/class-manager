@@ -26,3 +26,6 @@ keystore.properties
 /.idea/AndroidProjectSystem.xml
 /.idea/inspectionProfiles/
 /.idea/.name
+
+# Signed release output from Android Studio
+/app/release/

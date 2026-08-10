@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Class checklists: collect one thing from a whole class (signed slips, payments, returned
+  books) with an optional due date, a running count of who is still missing, and check-all /
+  uncheck-all. Database version 7.
+
 ### Planned
 
 - Import a timetable from a Pronote `.ics` export: days, hours, rooms and classes in one
