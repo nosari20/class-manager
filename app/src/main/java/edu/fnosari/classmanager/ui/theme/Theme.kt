@@ -2,6 +2,7 @@ package edu.fnosari.classmanager.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
@@ -67,13 +68,32 @@ fun isDarkTheme(pref: String, systemDark: Boolean): Boolean = when (pref) {
     else -> systemDark
 }
 
+/** Recolours the scheme around the teacher's chosen main colour. */
+private fun ColorScheme.withSeed(seed: Int, dark: Boolean): ColorScheme {
+    val primary = Palette.primaryFor(seed, dark)
+    return copy(
+        primary = Color(primary),
+        onPrimary = Color(Palette.onColor(primary)),
+        primaryContainer = Color(
+            if (dark) Palette.darken(seed, 0.55f) else Palette.lighten(seed, 0.82f)
+        ),
+        onPrimaryContainer = Color(
+            if (dark) Palette.lighten(seed, 0.75f) else Palette.darken(seed, 0.45f)
+        ),
+        secondary = Color(if (dark) Palette.lighten(seed, 0.6f) else Palette.darken(seed, 0.2f)),
+        onSecondary = Color(Palette.onColor(if (dark) Palette.lighten(seed, 0.6f) else Palette.darken(seed, 0.2f))),
+    )
+}
+
 @Composable
 fun ClassManagerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    seed: Int = Palette.DEFAULT,
     content: @Composable () -> Unit,
 ) {
+    val base = if (darkTheme) DarkColorScheme else LightColorScheme
     MaterialTheme(
-        colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme,
+        colorScheme = base.withSeed(seed, darkTheme),
         typography = Typography,
         shapes = PronoteShapes,
         content = content,

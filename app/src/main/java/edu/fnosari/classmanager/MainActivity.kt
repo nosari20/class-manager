@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import edu.fnosari.classmanager.ui.AppLocale
 import edu.fnosari.classmanager.ui.AppNavHost
 import edu.fnosari.classmanager.ui.theme.ClassManagerTheme
+import edu.fnosari.classmanager.ui.theme.Palette
 import edu.fnosari.classmanager.ui.theme.isDarkTheme
 
 class MainActivity : ComponentActivity() {
@@ -32,13 +33,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             // cached value first so the very first frame already has the right theme
             val pref by container.settings.theme.collectAsState(initial = container.theme)
+            val seed by container.settings.accentColor.collectAsState(initial = container.accentColor)
             val dark = isDarkTheme(pref, isSystemInDarkTheme())
-            // The status bar sits on the top app bar (colorScheme.primary), which is a deep green
-            // in light theme and a pale mint in dark — so the icon colours are the inverse of the
-            // usual light/dark mapping. The navigation bar sits on the app background.
-            LaunchedEffect(dark) {
+            // The status bar sits on the top app bar, so its icons follow that bar's brightness
+            // rather than the theme — a pale accent needs dark icons even in dark mode. The
+            // navigation bar sits on the app background, which does follow the theme.
+            val barLight = Palette.isLight(Palette.primaryFor(seed, dark))
+            LaunchedEffect(dark, barLight) {
                 enableEdgeToEdge(
-                    statusBarStyle = if (dark) {
+                    statusBarStyle = if (barLight) {
                         SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
                     } else {
                         SystemBarStyle.dark(Color.TRANSPARENT)
@@ -50,7 +53,7 @@ class MainActivity : ComponentActivity() {
                     },
                 )
             }
-            ClassManagerTheme(darkTheme = dark) {
+            ClassManagerTheme(darkTheme = dark, seed = seed) {
                 val nav = rememberNavController()
                 AppNavHost(nav, startStudentId)
             }

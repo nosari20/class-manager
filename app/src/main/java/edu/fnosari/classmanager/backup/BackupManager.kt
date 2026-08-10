@@ -58,6 +58,7 @@ class BackupManager(private val context: Context, private val container: AppCont
             settings.put("digestTime", container.settings.digestTime.first())
             settings.put("language", container.settings.language.first())
             settings.put("theme", container.settings.theme.first())
+            settings.put("accentColor", container.settings.accentColor.first())
             container.settings.csvMapping.first()?.let { (l, f) ->
                 settings.put("csvLast", l)
                 settings.put("csvFirst", f)
@@ -110,6 +111,7 @@ class BackupManager(private val context: Context, private val container: AppCont
                 if (json.has("digestTime")) container.settings.setDigestTime(json.getString("digestTime"))
                 if (json.has("language")) container.settings.setLanguage(json.getString("language"))
                 if (json.has("theme")) container.settings.setTheme(json.getString("theme"))
+                if (json.has("accentColor")) container.settings.setAccentColor(json.getInt("accentColor"))
                 if (json.has("csvLast") && json.has("csvFirst")) {
                     container.settings.setCsvMapping(json.getInt("csvLast"), json.getInt("csvFirst"))
                 }

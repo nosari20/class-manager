@@ -160,6 +160,7 @@ Both stored in DataStore (so they travel in `settings.json` backups) and cached 
 
 - **Language** — System default / Français / English. On API 33+ the framework owns it (`LocaleManager.applicationLocales`), so the choice also appears in Android's per-app language settings and the activity is recreated by the system; `res/xml/locales_config.xml` + `android:localeConfig` declare the supported set. Below API 33 `AppLocale.wrap` overrides the resource configuration and the activity recreates itself. The picker reads back through the framework on 33+ so an OS-side change is reflected.
 - **Appearance** — System default / Light / Dark, resolved by the pure `isDarkTheme(pref, systemDark)`; applies instantly, no recreate.
+- **App colour** — nine presets (`Palette.PRESETS`, stored as ARGB) recolour `colorScheme.primary` and everything derived from it: top bars, buttons, FABs, progress bars, and the status bar. `Palette` is plain ARGB maths so the same functions serve Compose and the system-bar setup in `MainActivity`. The dark theme lightens the seed (`primaryFor`), because a deep colour swallows the top bar; the status-bar icons then follow the *bar's* luminance rather than the theme, since a pale bar in dark mode still needs dark icons. `isLight` uses a 0.28 threshold — above the WCAG crossover (0.179) so all presets keep white text in light mode, below the lightened variants so those flip to dark.
 
 ### Demo data (Settings)
 

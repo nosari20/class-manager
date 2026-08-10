@@ -6,6 +6,7 @@ import edu.fnosari.classmanager.calendar.CalendarSyncManager
 import edu.fnosari.classmanager.data.AppDatabase
 import edu.fnosari.classmanager.data.SettingsRepository
 import edu.fnosari.classmanager.notifications.AlarmScheduler
+import edu.fnosari.classmanager.ui.theme.Palette
 import java.io.File
 
 class AppContainer(context: Context) {
@@ -24,11 +25,13 @@ class AppContainer(context: Context) {
     @Volatile var language: String = "system"
         private set
     @Volatile var theme: String = "system"
+    @Volatile var accentColor: Int = Palette.DEFAULT
 
     fun primeUiPrefs() {
-        val (lang, th) = settings.readUiPrefsBlocking()
-        language = lang
-        theme = th
+        val prefs = settings.readUiPrefsBlocking()
+        language = prefs.language
+        theme = prefs.theme
+        accentColor = prefs.accentColor
     }
 
     fun setLanguageCache(tag: String) { language = tag }

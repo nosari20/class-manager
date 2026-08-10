@@ -43,6 +43,14 @@ class SettingsViewModel(private val container: AppContainer) : ViewModel() {
         container.settings.setTheme(t)
     }
 
+    val accentColor = container.settings.accentColor
+        .stateIn(viewModelScope, SharingStarted.Eagerly, container.accentColor)
+
+    fun setAccentColor(argb: Int) = viewModelScope.launch {
+        container.accentColor = argb
+        container.settings.setAccentColor(argb)
+    }
+
     // null | "confirm" | "done" | "backup_done" | invalid reason
     var restoreState by mutableStateOf<String?>(null)
     private var pendingRestore: ByteArray? = null

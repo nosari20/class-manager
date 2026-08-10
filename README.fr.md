@@ -57,8 +57,9 @@ prochain cours avec cette classe.
 fichier, enregistré où le sélecteur du système le permet (Drive, carte SD…). Chiffrable par
 mot de passe, puisque le fichier contient des données d'élèves.
 
-**Langue et apparence** — français ou anglais, thème clair ou sombre, au choix dans
-l'application, indépendamment des réglages du téléphone.
+**Langue et apparence** — français ou anglais, thème clair ou sombre, et neuf couleurs
+principales qui recolorent l'application jusqu'à la barre d'état. Tout se règle dans
+l'application, indépendamment du téléphone.
 
 ## Confidentialité
 
