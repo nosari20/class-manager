@@ -67,4 +67,50 @@ object Palette {
      * version in dark mode, where a deep colour would swallow the top bar.
      */
     fun primaryFor(seed: Int, dark: Boolean): Int = if (dark) lighten(seed, 0.45f) else seed
+
+    /** [h] in degrees 0–360, [s] and [v] in 0–1. */
+    fun hsvToArgb(h: Float, s: Float, v: Float): Int {
+        val hue = ((h % 360f) + 360f) % 360f
+        val sat = s.coerceIn(0f, 1f)
+        val value = v.coerceIn(0f, 1f)
+        val c = value * sat
+        val x = c * (1 - kotlin.math.abs((hue / 60f) % 2 - 1))
+        val m = value - c
+        val (r, g, b) = when {
+            hue < 60f -> Triple(c, x, 0f)
+            hue < 120f -> Triple(x, c, 0f)
+            hue < 180f -> Triple(0f, c, x)
+            hue < 240f -> Triple(0f, x, c)
+            hue < 300f -> Triple(x, 0f, c)
+            else -> Triple(c, 0f, x)
+        }
+        fun byte(f: Float) = ((f + m) * 255f).roundToInt().coerceIn(0, 255)
+        return (0xFF shl 24) or (byte(r) shl 16) or (byte(g) shl 8) or byte(b)
+    }
+
+    /** Returns hue in degrees, saturation and value in 0–1. */
+    fun argbToHsv(argb: Int): Triple<Float, Float, Float> {
+        val r = red(argb) / 255f
+        val g = green(argb) / 255f
+        val b = blue(argb) / 255f
+        val max = maxOf(r, g, b)
+        val min = minOf(r, g, b)
+        val delta = max - min
+        val hue = when {
+            delta == 0f -> 0f
+            max == r -> 60f * (((g - b) / delta) % 6f)
+            max == g -> 60f * (((b - r) / delta) + 2f)
+            else -> 60f * (((r - g) / delta) + 4f)
+        }
+        return Triple(((hue % 360f) + 360f) % 360f, if (max == 0f) 0f else delta / max, max)
+    }
+
+    fun toHex(argb: Int): String = String.format("%06X", argb and 0xFFFFFF)
+
+    /** Accepts "1B6E5B" or "#1b6e5b"; null when it is not six hex digits. */
+    fun parseHex(text: String): Int? {
+        val clean = text.trim().removePrefix("#")
+        if (clean.length != 6 || clean.any { it.digitToIntOrNull(16) == null }) return null
+        return (0xFF shl 24) or clean.toInt(16)
+    }
 }
