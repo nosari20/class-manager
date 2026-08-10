@@ -8,6 +8,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- A choice of nine main colours in the settings, recolouring the top bars, buttons and the
+  status bar. Text and system-bar icons pick themselves from the colour's luminance, so a
+  pale bar in dark mode gets dark icons instead of unreadable white ones.
 - Class checklists: collect one thing from a whole class (signed slips, payments, returned
   books) with an optional due date, a running count of who is still missing, and check-all /
   uncheck-all. Database version 7.

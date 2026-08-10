@@ -6,8 +6,19 @@ import android.content.Context
 import android.content.ContextWrapper
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import edu.fnosari.classmanager.ui.theme.Palette
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -117,7 +128,7 @@ private fun ChoiceDialog(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Unit) {
     val context = LocalContext.current
@@ -142,7 +153,9 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
 
     var showLanguage by remember { mutableStateOf(false) }
     var showTheme by remember { mutableStateOf(false) }
+    var showAccent by remember { mutableStateOf(false) }
     val theme by vm.theme.collectAsStateWithLifecycle()
+    val accent by vm.accentColor.collectAsStateWithLifecycle()
     val language = vm.currentLanguage(context)
 
     Scaffold(
@@ -169,6 +182,20 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
                 headlineContent = { Text(stringResource(R.string.theme)) },
                 supportingContent = { Text(themeLabel(theme)) },
                 modifier = Modifier.clickable { showTheme = true },
+            )
+            HorizontalDivider()
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.accent_color)) },
+                supportingContent = { Text(stringResource(R.string.accent_color_help)) },
+                trailingContent = {
+                    Box(
+                        Modifier
+                            .size(28.dp)
+                            .clip(CircleShape)
+                            .background(Color(accent))
+                    )
+                },
+                modifier = Modifier.clickable { showAccent = true },
             )
             HorizontalDivider()
             ListItem(
@@ -249,6 +276,44 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
             label = { themeLabel(it) },
             onDismiss = { showTheme = false },
             onPick = { vm.setTheme(it); showTheme = false },
+        )
+    }
+
+    if (showAccent) {
+        AlertDialog(
+            onDismissRequest = { showAccent = false },
+            title = { Text(stringResource(R.string.accent_color)) },
+            text = {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    Palette.PRESETS.forEach { preset ->
+                        Box(
+                            Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .background(Color(preset))
+                                .clickable { vm.setAccentColor(preset); showAccent = false },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            if (preset == accent) {
+                                Icon(
+                                    Icons.Default.Check,
+                                    stringResource(R.string.accent_color),
+                                    tint = Color(Palette.onColor(preset)),
+                                )
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showAccent = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
         )
     }
 
