@@ -130,6 +130,31 @@ import kotlinx.coroutines.flow.Flow
     fun assignments(planId: Long): Flow<List<SeatAssignment>>
 }
 
+/** How many students have handed in a given checklist. */
+data class ChecklistProgress(val checklistId: Long, val doneCount: Int)
+
+@Dao interface ChecklistDao {
+    @Insert suspend fun insert(c: Checklist): Long
+    @Update suspend fun update(c: Checklist)
+    @Delete suspend fun delete(c: Checklist)
+    @Query("SELECT * FROM checklist WHERE classId = :classId ORDER BY createdAt DESC")
+    fun checklistsFor(classId: Long): Flow<List<Checklist>>
+    @Query("SELECT * FROM checklist WHERE id = :id") fun byIdFlow(id: Long): Flow<Checklist?>
+    @Query("SELECT * FROM checklist WHERE id = :id") suspend fun byId(id: Long): Checklist?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun check(e: ChecklistEntry)
+    @Query("DELETE FROM checklist_entry WHERE checklistId = :checklistId AND studentId = :studentId")
+    suspend fun uncheck(checklistId: Long, studentId: Long)
+    @Query("DELETE FROM checklist_entry WHERE checklistId = :checklistId")
+    suspend fun clear(checklistId: Long)
+    @Query("SELECT * FROM checklist_entry WHERE checklistId = :checklistId")
+    fun entries(checklistId: Long): Flow<List<ChecklistEntry>>
+    @Query("""SELECT checklistId, COUNT(*) AS doneCount FROM checklist_entry
+              WHERE checklistId IN (SELECT id FROM checklist WHERE classId = :classId)
+              GROUP BY checklistId""")
+    fun progressFor(classId: Long): Flow<List<ChecklistProgress>>
+}
+
 @Dao interface GroupDao {
     @Insert suspend fun insertConstraint(c: SeparationConstraint): Long
     @Delete suspend fun deleteConstraint(c: SeparationConstraint)

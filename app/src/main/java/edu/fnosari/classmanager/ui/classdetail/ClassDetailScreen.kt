@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Chair
 import androidx.compose.material.icons.filled.Groups
@@ -38,8 +39,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -64,6 +65,7 @@ import edu.fnosari.classmanager.R
 import edu.fnosari.classmanager.ui.common.pronoteTopBarColors
 import edu.fnosari.classmanager.appContainer
 import edu.fnosari.classmanager.data.Student
+import edu.fnosari.classmanager.ui.checklist.ChecklistsTab
 import edu.fnosari.classmanager.ui.common.PhotoUtil
 import edu.fnosari.classmanager.ui.seating.SeatingPlanBody
 import edu.fnosari.classmanager.ui.timetable.TimetableEditor
@@ -76,6 +78,7 @@ fun ClassDetailScreen(
     onPicker: () -> Unit,
     onGroups: () -> Unit,
     onSeating: () -> Unit,
+    onOpenChecklist: (Long) -> Unit,
     onBack: () -> Unit,
     /** Room to show in the seating tab; when set the screen opens on that tab. */
     roomId: Long? = null,
@@ -89,6 +92,7 @@ fun ClassDetailScreen(
     var tab by remember { mutableIntStateOf(if (roomId != null) TAB_SEATING else TAB_STUDENTS) }
     var showAdd by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<Student?>(null) }
+    var creatingChecklist by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -114,23 +118,35 @@ fun ClassDetailScreen(
             )
         },
         floatingActionButton = {
-            if (tab == TAB_STUDENTS) {
-                FloatingActionButton(onClick = { showAdd = true }) {
+            when (tab) {
+                TAB_STUDENTS -> FloatingActionButton(onClick = { showAdd = true }) {
                     Icon(Icons.Default.PersonAdd, stringResource(R.string.add_student))
+                }
+                TAB_CHECKLISTS -> FloatingActionButton(onClick = { creatingChecklist = true }) {
+                    Icon(Icons.Default.Add, stringResource(R.string.new_checklist))
                 }
             }
         },
     ) { padding ->
         Column(Modifier.padding(padding).fillMaxSize()) {
-            TabRow(selectedTabIndex = tab) {
+            ScrollableTabRow(selectedTabIndex = tab, edgePadding = 0.dp) {
                 Tab(selected = tab == TAB_STUDENTS, onClick = { tab = TAB_STUDENTS },
                     text = { Text(stringResource(R.string.students)) })
                 Tab(selected = tab == TAB_TIMETABLE, onClick = { tab = TAB_TIMETABLE },
                     text = { Text(stringResource(R.string.timetable)) })
                 Tab(selected = tab == TAB_SEATING, onClick = { tab = TAB_SEATING },
                     text = { Text(stringResource(R.string.seating_plan)) })
+                Tab(selected = tab == TAB_CHECKLISTS, onClick = { tab = TAB_CHECKLISTS },
+                    text = { Text(stringResource(R.string.checklists)) })
             }
-            if (tab == TAB_STUDENTS) {
+            if (tab == TAB_CHECKLISTS) {
+                ChecklistsTab(
+                    classId = classId,
+                    onOpen = onOpenChecklist,
+                    creating = creatingChecklist,
+                    onCreatingChange = { creatingChecklist = it },
+                )
+            } else if (tab == TAB_STUDENTS) {
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(96.dp),
                     contentPadding = PaddingValues(16.dp),
@@ -191,6 +207,7 @@ fun ClassDetailScreen(
 private const val TAB_STUDENTS = 0
 private const val TAB_TIMETABLE = 1
 private const val TAB_SEATING = 2
+private const val TAB_CHECKLISTS = 3
 
 /**
  * Seating for [preferredRoomId] when the screen was opened from a course, otherwise for the room

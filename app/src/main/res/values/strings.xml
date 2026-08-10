@@ -148,4 +148,16 @@
     <string name="seating_plan">Seating</string>
     <string name="no_plan_for_room">No seating plan yet for %1$s</string>
     <string name="no_room_scheduled">No room scheduled for this class</string>
+    <string name="checklists">Checklists</string>
+    <string name="new_checklist">New checklist</string>
+    <string name="checklist_title">What are you collecting?</string>
+    <string name="checklist_title_help">e.g. Signed permission slip, trip payment, returned book</string>
+    <string name="checklist_due">Due date (yyyy-MM-dd, optional)</string>
+    <string name="checklist_progress">%1$d of %2$d</string>
+    <string name="checklist_missing">%1$d missing</string>
+    <string name="checklist_complete">All in</string>
+    <string name="check_all">Check all</string>
+    <string name="uncheck_all">Uncheck all</string>
+    <string name="confirm_delete_checklist">Delete this checklist?</string>
+    <string name="no_checklists">No checklist yet. Create one to tick off a whole class — signed slips, payments, returned books.</string>
 </resources>

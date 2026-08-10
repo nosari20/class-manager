@@ -12,11 +12,12 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         CustomField::class, Reminder::class, SeparationConstraint::class,
         Grouping::class, GroupingGroup::class, GroupingMember::class,
         Room::class, Desk::class, SeatingPlan::class, SeatAssignment::class,
-        SlotCancellation::class, OneOffSlot::class],
-    version = 6,
+        SlotCancellation::class, OneOffSlot::class,
+        Checklist::class, ChecklistEntry::class],
+    version = 7,
     exportSchema = true,
     autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 3, to = 4),
-        AutoMigration(from = 5, to = 6)],
+        AutoMigration(from = 5, to = 6), AutoMigration(from = 6, to = 7)],
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun classDao(): ClassDao
@@ -27,6 +28,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun reminderDao(): ReminderDao
     abstract fun groupDao(): GroupDao
     abstract fun seatingDao(): SeatingDao
+    abstract fun checklistDao(): ChecklistDao
 
     companion object {
         const val DB_NAME = "classmanager.db"

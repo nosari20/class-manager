@@ -164,6 +164,36 @@ data class OneOffSlot(
     val roomId: Long? = null,
 )
 
+/** Something to collect from a whole class: signed slips, forms, payments. */
+@Entity(
+    tableName = "checklist",
+    foreignKeys = [ForeignKey(entity = SchoolClass::class, parentColumns = ["id"],
+        childColumns = ["classId"], onDelete = ForeignKey.CASCADE)],
+    indices = [Index("classId")],
+)
+data class Checklist(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val classId: Long,
+    val title: String,
+    val dueDate: String? = null,          // "yyyy-MM-dd", optional deadline
+    val createdAt: Long = System.currentTimeMillis(),
+)
+
+/** One row per student who has handed the thing in — no row means still missing. */
+@Entity(
+    tableName = "checklist_entry",
+    primaryKeys = ["checklistId", "studentId"],
+    foreignKeys = [
+        ForeignKey(entity = Checklist::class, parentColumns = ["id"], childColumns = ["checklistId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = Student::class, parentColumns = ["id"], childColumns = ["studentId"], onDelete = ForeignKey.CASCADE)],
+    indices = [Index("studentId")],
+)
+data class ChecklistEntry(
+    val checklistId: Long,
+    val studentId: Long,
+    val doneAt: Long = System.currentTimeMillis(),
+)
+
 @Entity(tableName = "room")
 data class Room(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

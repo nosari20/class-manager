@@ -73,6 +73,44 @@ class DaoTest {
         assertEquals(0, db.seatingDao().plansFor(c).first().size)
     }
 
+    @Test fun checklistTracksWhoHandedIn() = runBlocking {
+        val c = db.classDao().insert(SchoolClass(name = "5eB", level = "5e"))
+        val s1 = db.studentDao().insert(Student(classId = c, lastName = "A", firstName = "a"))
+        val s2 = db.studentDao().insert(Student(classId = c, lastName = "B", firstName = "b"))
+        val id = db.checklistDao().insert(Checklist(classId = c, title = "Autorisation signée"))
+
+        assertEquals(0, db.checklistDao().entries(id).first().size)
+        db.checklistDao().check(ChecklistEntry(checklistId = id, studentId = s1))
+        assertEquals(setOf(s1), db.checklistDao().entries(id).first().map { it.studentId }.toSet())
+        // checking twice must not create a second row
+        db.checklistDao().check(ChecklistEntry(checklistId = id, studentId = s1))
+        assertEquals(1, db.checklistDao().entries(id).first().size)
+
+        db.checklistDao().check(ChecklistEntry(checklistId = id, studentId = s2))
+        assertEquals(2, db.checklistDao().progressFor(c).first().single().doneCount)
+
+        db.checklistDao().uncheck(id, s1)
+        assertEquals(setOf(s2), db.checklistDao().entries(id).first().map { it.studentId }.toSet())
+        db.checklistDao().clear(id)
+        assertEquals(0, db.checklistDao().entries(id).first().size)
+    }
+
+    @Test fun checklistEntriesFollowDeletedStudentsAndClasses() = runBlocking {
+        val c = db.classDao().insert(SchoolClass(name = "6eA", level = "6e"))
+        val s = db.studentDao().insert(Student(classId = c, lastName = "A", firstName = "a"))
+        val id = db.checklistDao().insert(Checklist(classId = c, title = "Carnet"))
+        db.checklistDao().check(ChecklistEntry(checklistId = id, studentId = s))
+
+        // a student who leaves takes their tick with them
+        db.studentDao().delete(db.studentDao().byId(s)!!)
+        assertEquals(0, db.checklistDao().entries(id).first().size)
+
+        // deleting the class removes its checklists
+        db.classDao().delete(db.classDao().byId(c)!!)
+        assertEquals(0, db.checklistDao().checklistsFor(c).first().size)
+        assertNull(db.checklistDao().byId(id))
+    }
+
     @Test fun groupingRoundTrip() = runBlocking {
         val c = db.classDao().insert(SchoolClass(name = "4eC", level = "4e"))
         val s1 = db.studentDao().insert(Student(classId = c, lastName = "A", firstName = "a"))

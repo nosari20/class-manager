@@ -12,6 +12,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import edu.fnosari.classmanager.ui.checklist.ChecklistDetailScreen
 import edu.fnosari.classmanager.ui.classdetail.ClassDetailScreen
 import edu.fnosari.classmanager.ui.csv.CsvImportScreen
 import edu.fnosari.classmanager.ui.home.HomeScreen
@@ -34,6 +35,8 @@ object Routes {
     const val CSV_IMPORT = "csvImport"
     const val SETTINGS = "settings"
     const val GLOBAL_TIMETABLE = "globalTimetable"
+    const val CHECKLIST = "checklist/{checklistId}"
+    fun checklist(id: Long) = "checklist/$id"
     const val ROOMS = "rooms"
     const val ROOM_EDITOR = "room/{roomId}"
     const val SEATING_PLANS = "seatingPlans/{classId}"
@@ -83,8 +86,18 @@ fun AppNavHost(nav: NavHostController, startStudentId: Long?) {
                 onPicker = { nav.navigate(Routes.picker(classId)) },
                 onGroups = { nav.navigate(Routes.groups(classId)) },
                 onSeating = { nav.navigate(Routes.seatingPlans(classId)) },
+                onOpenChecklist = { id -> nav.navigate(Routes.checklist(id)) },
                 onBack = { nav.popBackStack() },
                 roomId = it.arguments!!.getLong("roomId").takeIf { id -> id > 0 },
+            )
+        }
+        composable(
+            Routes.CHECKLIST,
+            arguments = listOf(navArgument("checklistId") { type = NavType.LongType }),
+        ) {
+            ChecklistDetailScreen(
+                it.arguments!!.getLong("checklistId"),
+                onBack = { nav.popBackStack() },
             )
         }
         composable(

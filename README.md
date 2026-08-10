@@ -39,6 +39,10 @@ them; one- or two-seat tables, rotatable for U-shaped layouts. Rooms are shared 
 classes, and each class can keep several named plans per room. Separation constraints are
 highlighted in red when two students who must not sit together end up at the same table.
 
+**Checklists** — collect one thing from a whole class: signed slips, trip payments, returned
+books. Each checklist has an optional due date and shows how many are still missing; tick
+students off as they hand in.
+
 **Random picker** — draws a student without repeating until everyone has been picked, with
 absences excluded for the day.
 

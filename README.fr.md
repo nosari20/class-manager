@@ -38,6 +38,10 @@ en U. Les salles sont partagées entre les classes, et chaque classe peut garder
 plans nommés par salle. Les contraintes de séparation s'affichent en rouge quand deux élèves
 qui ne doivent pas être ensemble se retrouvent à la même table.
 
+**Listes de suivi** — pointer toute une classe pour une même chose : autorisations signées,
+paiements de sortie, livres rendus. Date limite facultative, nombre de manquants affiché, et
+on coche au fur et à mesure des retours.
+
 **Tirage au sort** — tire un élève sans le reprendre tant que toute la classe n'est pas
 passée, en excluant les absents du jour.
 

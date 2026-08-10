@@ -148,4 +148,16 @@
     <string name="seating_plan">Plan</string>
     <string name="no_plan_for_room">Aucun plan de classe pour %1$s</string>
     <string name="no_room_scheduled">Aucune salle prévue pour cette classe</string>
+    <string name="checklists">Listes</string>
+    <string name="new_checklist">Nouvelle liste</string>
+    <string name="checklist_title">Que faut-il récupérer ?</string>
+    <string name="checklist_title_help">ex. Autorisation signée, paiement de la sortie, livre rendu</string>
+    <string name="checklist_due">Date limite (aaaa-MM-jj, facultatif)</string>
+    <string name="checklist_progress">%1$d sur %2$d</string>
+    <string name="checklist_missing">%1$d manquants</string>
+    <string name="checklist_complete">Au complet</string>
+    <string name="check_all">Tout cocher</string>
+    <string name="uncheck_all">Tout décocher</string>
+    <string name="confirm_delete_checklist">Supprimer cette liste ?</string>
+    <string name="no_checklists">Aucune liste. Créez-en une pour pointer toute la classe : autorisations signées, paiements, livres rendus.</string>
 </resources>
