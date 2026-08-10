@@ -13,10 +13,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import edu.fnosari.classmanager.ui.theme.Palette
 import androidx.compose.foundation.layout.Row
@@ -40,6 +43,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -48,6 +52,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -91,6 +96,92 @@ private fun Context.findActivity(): Activity? {
         c = c.baseContext
     }
     return null
+}
+
+/** Free colour choice: hue/saturation/brightness sliders kept in step with a hex field. */
+@Composable
+private fun CustomColorDialog(initial: Int, onDismiss: () -> Unit, onPick: (Int) -> Unit) {
+    val start = remember(initial) { Palette.argbToHsv(initial) }
+    var hue by remember { mutableFloatStateOf(start.first) }
+    var sat by remember { mutableFloatStateOf(start.second) }
+    var value by remember { mutableFloatStateOf(start.third) }
+    val color = Palette.hsvToArgb(hue, sat, value)
+    // the field is only rewritten from the sliders when it is not being edited into a valid colour
+    var hex by remember { mutableStateOf(Palette.toHex(initial)) }
+    var hexFocused by remember { mutableStateOf(false) }
+    if (!hexFocused) hex = Palette.toHex(color)
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.custom_color)) },
+        text = {
+            Column {
+                // preview, with the text colour the app would actually put on it
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(72.dp)
+                        .clip(MaterialTheme.shapes.small)
+                        .background(Color(color)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        stringResource(R.string.app_name),
+                        color = Color(Palette.onColor(color)),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                }
+                Text(
+                    stringResource(R.string.color_hue),
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.padding(top = 12.dp),
+                )
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(14.dp)
+                        .clip(MaterialTheme.shapes.extraSmall)
+                        .background(
+                            Brush.horizontalGradient(
+                                (0..6).map { Color(Palette.hsvToArgb(it * 60f, 1f, 1f)) }
+                            )
+                        )
+                )
+                Slider(value = hue, onValueChange = { hue = it }, valueRange = 0f..360f)
+                Text(stringResource(R.string.color_saturation), style = MaterialTheme.typography.labelMedium)
+                Slider(value = sat, onValueChange = { sat = it })
+                Text(stringResource(R.string.color_brightness), style = MaterialTheme.typography.labelMedium)
+                Slider(value = value, onValueChange = { value = it })
+                OutlinedTextField(
+                    value = hex,
+                    onValueChange = { typed ->
+                        hex = typed.uppercase()
+                        Palette.parseHex(typed)?.let {
+                            val (h, s, v) = Palette.argbToHsv(it)
+                            hue = h
+                            sat = s
+                            value = v
+                        }
+                    },
+                    label = { Text(stringResource(R.string.color_hex)) },
+                    prefix = { Text("#") },
+                    singleLine = true,
+                    isError = Palette.parseHex(hex) == null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged { hexFocused = it.isFocused },
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onPick(Palette.parseHex(hex) ?: color) }) {
+                Text(stringResource(R.string.save))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
+        },
+    )
 }
 
 @Composable
@@ -154,6 +245,7 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
     var showLanguage by remember { mutableStateOf(false) }
     var showTheme by remember { mutableStateOf(false) }
     var showAccent by remember { mutableStateOf(false) }
+    var showCustomColor by remember { mutableStateOf(false) }
     val theme by vm.theme.collectAsStateWithLifecycle()
     val accent by vm.accentColor.collectAsStateWithLifecycle()
     val language = vm.currentLanguage(context)
@@ -308,12 +400,24 @@ fun SettingsScreen(onBack: () -> Unit, onRestored: () -> Unit, onRooms: () -> Un
                     }
                 }
             },
-            confirmButton = {},
+            confirmButton = {
+                TextButton(onClick = { showAccent = false; showCustomColor = true }) {
+                    Text(stringResource(R.string.custom_color))
+                }
+            },
             dismissButton = {
                 TextButton(onClick = { showAccent = false }) {
                     Text(stringResource(R.string.cancel))
                 }
             },
+        )
+    }
+
+    if (showCustomColor) {
+        CustomColorDialog(
+            initial = accent,
+            onDismiss = { showCustomColor = false },
+            onPick = { vm.setAccentColor(it); showCustomColor = false },
         )
     }
 

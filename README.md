@@ -57,9 +57,10 @@ fixed date and time, in a morning digest, or before the next lesson with that cl
 wherever the system picker allows (Drive, SD card, …). Optionally encrypted with a
 password, since the file contains student data.
 
-**Language and appearance** — French and English, light and dark, and a choice of nine main
-colours that recolour the app down to the status bar. All set inside the app, independently of
-the phone's settings.
+**Language and appearance** — French and English, light and dark, and a main colour picked
+from nine presets or mixed freely with hue/saturation/brightness sliders and a hex field. The
+colour recolours the app down to the status bar. All set inside the app, independently of the
+phone's settings.
 
 ## Privacy
 

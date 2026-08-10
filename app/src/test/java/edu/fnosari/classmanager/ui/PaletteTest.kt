@@ -57,6 +57,41 @@ class PaletteTest {
         }
     }
 
+    @Test fun hsvRoundTripsThroughEveryPreset() {
+        Palette.PRESETS.forEach { preset ->
+            val (h, s, v) = Palette.argbToHsv(preset)
+            // one step of rounding per channel is tolerable; the colour must not drift
+            val back = Palette.hsvToArgb(h, s, v)
+            assertEquals(Palette.red(preset).toFloat(), Palette.red(back).toFloat(), 1f)
+            assertEquals(Palette.green(preset).toFloat(), Palette.green(back).toFloat(), 1f)
+            assertEquals(Palette.blue(preset).toFloat(), Palette.blue(back).toFloat(), 1f)
+        }
+    }
+
+    @Test fun hsvHitsThePrimaries() {
+        assertEquals(0xFFFF0000.toInt(), Palette.hsvToArgb(0f, 1f, 1f))
+        assertEquals(0xFF00FF00.toInt(), Palette.hsvToArgb(120f, 1f, 1f))
+        assertEquals(0xFF0000FF.toInt(), Palette.hsvToArgb(240f, 1f, 1f))
+        assertEquals(0xFFFFFFFF.toInt(), Palette.hsvToArgb(0f, 0f, 1f))
+        assertEquals(0xFF000000.toInt(), Palette.hsvToArgb(0f, 0f, 0f))
+    }
+
+    @Test fun hueWrapsInsteadOfBreaking() {
+        assertEquals(Palette.hsvToArgb(10f, 1f, 1f), Palette.hsvToArgb(370f, 1f, 1f))
+        assertEquals(Palette.hsvToArgb(350f, 1f, 1f), Palette.hsvToArgb(-10f, 1f, 1f))
+    }
+
+    @Test fun hexRoundTripsAndRejectsRubbish() {
+        assertEquals("16866F", Palette.toHex(green))
+        assertEquals(green, Palette.parseHex("16866F"))
+        assertEquals(green, Palette.parseHex("#16866f"))
+        assertEquals(green, Palette.parseHex("  16866F "))
+        assertEquals(null, Palette.parseHex("16866"))
+        assertEquals(null, Palette.parseHex("16866FF"))
+        assertEquals(null, Palette.parseHex("ZZZZZZ"))
+        assertEquals(null, Palette.parseHex(""))
+    }
+
     @Test fun onColorFlipsWithBackgroundBrightness() {
         assertEquals(0xFFFFFFFF.toInt(), Palette.onColor(0xFF000000.toInt()))
         assertEquals(0xFF14201C.toInt(), Palette.onColor(0xFFFFFFFF.toInt()))

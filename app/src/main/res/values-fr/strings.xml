@@ -147,6 +147,11 @@
     <string name="theme_dark">Sombre</string>
     <string name="accent_color">Couleur de l\'application</string>
     <string name="accent_color_help">Utilisée pour la barre du haut, les boutons et la barre d\'état</string>
+    <string name="custom_color">Personnalisée…</string>
+    <string name="color_hue">Teinte</string>
+    <string name="color_saturation">Saturation</string>
+    <string name="color_brightness">Luminosité</string>
+    <string name="color_hex">Code hexadécimal</string>
     <string name="seating_plan">Plan</string>
     <string name="no_plan_for_room">Aucun plan de classe pour %1$s</string>
     <string name="no_room_scheduled">Aucune salle prévue pour cette classe</string>

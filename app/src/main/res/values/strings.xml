@@ -147,6 +147,11 @@
     <string name="theme_dark">Dark</string>
     <string name="accent_color">App colour</string>
     <string name="accent_color_help">Used for the top bar, buttons and the status bar</string>
+    <string name="custom_color">Custom…</string>
+    <string name="color_hue">Hue</string>
+    <string name="color_saturation">Saturation</string>
+    <string name="color_brightness">Brightness</string>
+    <string name="color_hex">Hex code</string>
     <string name="seating_plan">Seating</string>
     <string name="no_plan_for_room">No seating plan yet for %1$s</string>
     <string name="no_room_scheduled">No room scheduled for this class</string>
